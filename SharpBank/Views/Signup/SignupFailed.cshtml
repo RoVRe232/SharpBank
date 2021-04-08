@@ -1,0 +1,78 @@
+﻿@using SharpBank.Models
+
+@{
+    ViewData["Title"] = "SignupFailed";
+    var errorData = ViewBag.Message;
+}
+<div class="row">
+    <div class="col-sm-2">
+        <a asp-controller="Login" asp-action="Index"><img src="~/content/images/Logo.png" /></a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="container col-sm-6">
+
+        <h2 class="text-center">Create a new account</h2>
+        <br />
+        <p>Please complete the form below and create your brand new SharpBank account!</p>
+        <p>Already have one? <a asp-controller="Login" asp-action="Index"><u>Sign in here.</u></a> </p>
+        <form method="post" enctype="multipart/form-data" asp-controller="Signup" asp-action="Signup">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input name="email" type="email" class="form-control formInput" id="email" placeholder="Email..." required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input name="username" type="text" class="form-control formInput" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input name="password" type="password" class="form-control formInput" id="password" required>
+                <div class="col-sm-6" id="password-strength-text" style="font-weight:bold;padding:6px 12px;"></div>
+            </div>
+            <small>Password must be at least 5 chars, <b>include uppercase, lowercase and at least one special character.</b></small>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm password:</label>
+                <input name="confirmPassword" type="password" class="form-control formInput" id="confirmPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="firstname">Firstname:</label>
+                <input name="firstname" type="text" class="form-control formInput" id="firstname" required>
+            </div>
+            <div class="form-group">
+                <label for="lastname">Lastname:</label>
+                <input name="lastname" type="text" class="form-control formInput" id="lastname" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cnp">CNP:</label>
+                <input name="cnp" type="text" class="form-control formInput" id="cnp" required>
+            </div>
+
+            <div class="form-group">
+                <label for="ci">CI:</label>
+                <input name="ci" type="text" class="form-control formInput" id="ci" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary col-sm-4">Sign up</button>
+
+            <small class="text-center">All data is being processed by our program and will not be shared or used outside it.</small>
+            <a href="#">Our Terms of Service</a>
+        </form>
+
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="~/lib/password-score/dist/js/password-score.js"></script>
+<script type="text/javascript" src="~/lib/password-score/dist/js/password-score-options.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script type="text/javascript">
+    score = new Score("abcdzw");
+    let entropy = score.calculateBruteForceEntropy();
+    let cores = 4;
+    score.calculateAverageTimeToCrack(entropy, cores);
+    console.log(score.calculateAverageTimeToCrack(entropy, cores) / 100000);
+</script>
