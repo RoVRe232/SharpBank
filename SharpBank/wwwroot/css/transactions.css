@@ -1,0 +1,16 @@
+﻿body {
+}
+
+.transactions-card-jumbo {
+    background-image: url("../content/images/TransactionsCardJumbotronBg.jpg");
+    background-repeat:no-repeat;
+    background-position:center;
+    width:100%;
+    height:60vh;
+    background-size: cover;
+    opacity:0.9;
+}
+
+div.transactions-card-jumbo > * {
+    opacity: 1;
+}
