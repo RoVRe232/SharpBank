@@ -26,7 +26,7 @@ namespace SharpBank.Models.Login
             byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
 
             var client = new HttpClient();
-            client.BaseAddress = new System.Uri($"{Constants.kBankApiPath}UserController/RegisterUser");
+            client.BaseAddress = new System.Uri($"{Constants.kBankApiPath}user/SignupRequest");
 
             var response = await client.PostAsync(client.BaseAddress, byteContent);
             return response;

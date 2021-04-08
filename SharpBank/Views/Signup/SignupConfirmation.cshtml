@@ -3,5 +3,31 @@
     ViewData["Title"] = "SignupConfirmation";
 }
 
-<h1>SignupConfirmation</h1>
+<div class="row">
+    <div class="col-sm-2">
+        <a asp-controller="Login" asp-action="Index"><img src="~/content/images/Logo.png" /></a>
+    </div>
+</div>
 
+<div class="row">
+    <div class="container col-sm-6">
+
+        <h2 class="text-center">Email confirmation</h2>
+        <br />
+        <p>Please complete the form below with the code received on your email</p>
+        <p>Did not receive an email? <a asp-controller="Signup" asp-action="ResenedConfirmation"><u>Resend confirmation mail.</u></a> </p>
+        <form method="post" enctype="multipart/form-data" asp-controller="Signup" asp-action="SendConfirmationNumber">
+
+            <div class="form-group">
+                <label for="code">Security Code:</label>
+                <input name="code" type="text" class="form-control formInput" id="code" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary col-sm-4">Sign up</button>
+
+            <small class="text-center">All data is being processed by our program and will not be shared or used outside it.</small>
+            <a href="#">Our Terms of Service</a>
+        </form>
+
+    </div>
+</div>
