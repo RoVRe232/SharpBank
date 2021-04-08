@@ -16,6 +16,7 @@ namespace BankAPI.Entities
         public string PhoneNumber { get; set; }
 
         public Address HomeAddress { get; set; }
+        public ICollection<BankAccount> BankAccounts{get; set;}
         void ICustomer.AddUser()
         {
             throw new NotImplementedException();
