@@ -10,7 +10,7 @@ namespace BankAPI.Entities
     {
         [Key]
         [Required]
-        [DataType(DataType.Date)]
+        [StringLength(256)]
         public string IBAN { get; set; }
 
         [StringLength(256)]

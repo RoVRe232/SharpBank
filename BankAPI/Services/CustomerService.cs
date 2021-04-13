@@ -92,7 +92,8 @@ namespace BankAPI.Services
 
         public void MakeTransaction()
         {
-            throw new NotImplementedException();
+
+
         }
 
         public void RequestBankAccountCloseup()

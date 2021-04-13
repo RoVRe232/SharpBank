@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BankAPI.Migrations
 {
-    public partial class initialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,6 +40,8 @@ namespace BankAPI.Migrations
                     LastName = table.Column<string>(maxLength: 256, nullable: false),
                     CNP = table.Column<string>(maxLength: 256, nullable: false),
                     CI = table.Column<string>(maxLength: 256, nullable: false),
+                    ConfirmationKey = table.Column<string>(maxLength: 256, nullable: false),
+                    IsConfirmed = table.Column<bool>(nullable: false),
                     ActionsHistory = table.Column<string>(maxLength: 2048, nullable: true)
                 },
                 constraints: table =>
@@ -60,6 +62,8 @@ namespace BankAPI.Migrations
                     LastName = table.Column<string>(maxLength: 256, nullable: false),
                     CNP = table.Column<string>(maxLength: 256, nullable: false),
                     CI = table.Column<string>(maxLength: 256, nullable: false),
+                    ConfirmationKey = table.Column<string>(maxLength: 256, nullable: false),
+                    IsConfirmed = table.Column<bool>(nullable: false),
                     DateOfBirth = table.Column<DateTime>(nullable: false),
                     PhoneNumber = table.Column<string>(maxLength: 128, nullable: true),
                     HomeAddressId = table.Column<int>(nullable: true)
@@ -79,7 +83,7 @@ namespace BankAPI.Migrations
                 name: "BankAccounts",
                 columns: table => new
                 {
-                    IBAN = table.Column<string>(nullable: false),
+                    IBAN = table.Column<string>(maxLength: 256, nullable: false),
                     Type = table.Column<string>(maxLength: 256, nullable: true),
                     Balance = table.Column<double>(nullable: false),
                     Currency = table.Column<string>(maxLength: 64, nullable: true),

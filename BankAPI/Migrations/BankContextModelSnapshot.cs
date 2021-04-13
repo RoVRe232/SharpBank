@@ -86,7 +86,8 @@ namespace BankAPI.Migrations
 
                     b.Property<string>("ConfirmationKey")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
 
                     b.Property<string>("EmailAddress")
                         .IsRequired()
@@ -124,7 +125,8 @@ namespace BankAPI.Migrations
             modelBuilder.Entity("BankAPI.Entities.BankAccount", b =>
                 {
                     b.Property<string>("IBAN")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
 
                     b.Property<double>("Balance")
                         .HasColumnType("float");
@@ -154,7 +156,7 @@ namespace BankAPI.Migrations
                         .HasMaxLength(256);
 
                     b.Property<string>("BankAccountIBAN")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("CVV")
                         .HasColumnType("nvarchar(32)")
@@ -197,7 +199,8 @@ namespace BankAPI.Migrations
 
                     b.Property<string>("ConfirmationKey")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
 
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
@@ -254,7 +257,7 @@ namespace BankAPI.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("BankAccountIBAN1")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Currency")
                         .IsRequired()
@@ -299,7 +302,7 @@ namespace BankAPI.Migrations
                     b.HasBaseType("BankAPI.Entities.Transaction");
 
                     b.Property<string>("BankAccountIBAN")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<int>("DaysInterval")
                         .HasColumnType("int");

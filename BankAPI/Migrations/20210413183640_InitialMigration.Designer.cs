@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAPI.Migrations
 {
     [DbContext(typeof(BankContext))]
-    [Migration("20210410085426_initialCreate")]
-    partial class initialCreate
+    [Migration("20210413183640_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -86,6 +86,11 @@ namespace BankAPI.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
+                    b.Property<string>("ConfirmationKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
                     b.Property<string>("EmailAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(256)")
@@ -95,6 +100,9 @@ namespace BankAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -119,7 +127,8 @@ namespace BankAPI.Migrations
             modelBuilder.Entity("BankAPI.Entities.BankAccount", b =>
                 {
                     b.Property<string>("IBAN")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
 
                     b.Property<double>("Balance")
                         .HasColumnType("float");
@@ -149,7 +158,7 @@ namespace BankAPI.Migrations
                         .HasMaxLength(256);
 
                     b.Property<string>("BankAccountIBAN")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("CVV")
                         .HasColumnType("nvarchar(32)")
@@ -190,6 +199,11 @@ namespace BankAPI.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
+                    b.Property<string>("ConfirmationKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
 
@@ -205,6 +219,9 @@ namespace BankAPI.Migrations
 
                     b.Property<int?>("HomeAddressId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -242,7 +259,7 @@ namespace BankAPI.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("BankAccountIBAN1")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Currency")
                         .IsRequired()
@@ -287,7 +304,7 @@ namespace BankAPI.Migrations
                     b.HasBaseType("BankAPI.Entities.Transaction");
 
                     b.Property<string>("BankAccountIBAN")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<int>("DaysInterval")
                         .HasColumnType("int");

@@ -38,7 +38,10 @@ namespace BankAPI
             services.AddDbContext<BankContext>(options => options.UseSqlServer(connection));
 
             services.AddTransient<ICustomerRepository, CustomerRepository>();
+            services.AddTransient<ITransactionRepository, TransactionRepository>();
+
             services.AddScoped<CustomerService>();
+            services.AddScoped<TransactionService>();
 
         }
 

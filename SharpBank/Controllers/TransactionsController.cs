@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SharpBank.Models.Transactions;
 
 namespace SharpBank.Controllers
 {
@@ -16,6 +17,13 @@ namespace SharpBank.Controllers
         public IActionResult MakeTransaction()
         {
             return View();
+        }
+
+        [HttpPost]
+        public void AddNewTransaction(MakeTransactionFormModel formData)
+        {
+            
+
         }
 
     }
