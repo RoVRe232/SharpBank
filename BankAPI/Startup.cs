@@ -4,6 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using BankAPI.Context;
 using BankAPI.Entities;
+using BankAPI.Repositories;
+using BankAPI.Repositories.Interfaces;
+using BankAPI.Services;
+using BankAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +36,9 @@ namespace BankAPI
 
             var connection = @"Server=(localdb)\mssqllocaldb;Database=BankDb;Trusted_Connection=True;ConnectRetryCount=0";
             services.AddDbContext<BankContext>(options => options.UseSqlServer(connection));
+
+            services.AddTransient<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<CustomerService>();
 
         }
 

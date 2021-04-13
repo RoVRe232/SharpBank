@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using SharpBank.Services;
 using SharpBank.Utils;
 using System;
 using System.Net.Http;
@@ -16,19 +17,15 @@ namespace SharpBank.Models.Login
         public string LastName { get; set; }
         public string Cnp { get; set; }
         public string Ci { get; set; }
-
         public async System.Threading.Tasks.Task<HttpResponseMessage> SendSignupRequestToApiAsync()
         {
             var signupFormModelJSON = JsonConvert.SerializeObject(this);
-            var bodyBuffer = Encoding.UTF8.GetBytes(signupFormModelJSON);
-            var byteContent = new ByteArrayContent(bodyBuffer);
+            var requestContent = new StringContent(signupFormModelJSON, Encoding.UTF8, "application/json");
+            var requestUri = new Uri($"{Constants.kBankApiDomain}/api/user/signuprequest");
 
-            byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            var response = await HttpService.Instance.httpClient.PostAsync(requestUri, requestContent);
+            response.EnsureSuccessStatusCode();
 
-            var client = new HttpClient();
-            client.BaseAddress = new System.Uri($"{Constants.kBankApiPath}user/SignupRequest");
-
-            var response = await client.PostAsync(client.BaseAddress, byteContent);
             return response;
         }
     }

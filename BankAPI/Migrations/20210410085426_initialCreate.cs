@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BankAPI.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class initialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,14 +13,14 @@ namespace BankAPI.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Country = table.Column<string>(nullable: true),
-                    County = table.Column<string>(nullable: true),
-                    City = table.Column<string>(nullable: true),
-                    Street = table.Column<string>(nullable: true),
-                    Number = table.Column<string>(nullable: true),
-                    Block = table.Column<string>(nullable: true),
-                    Stairway = table.Column<string>(nullable: true),
-                    Apartment = table.Column<string>(nullable: true)
+                    Country = table.Column<string>(maxLength: 256, nullable: true),
+                    County = table.Column<string>(maxLength: 256, nullable: true),
+                    City = table.Column<string>(maxLength: 256, nullable: true),
+                    Street = table.Column<string>(maxLength: 256, nullable: true),
+                    Number = table.Column<string>(maxLength: 256, nullable: true),
+                    Block = table.Column<string>(maxLength: 256, nullable: true),
+                    Stairway = table.Column<string>(maxLength: 256, nullable: true),
+                    Apartment = table.Column<string>(maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -32,33 +33,18 @@ namespace BankAPI.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(nullable: true),
-                    PasswordToken = table.Column<string>(nullable: true),
-                    EmailAddress = table.Column<string>(nullable: true),
-                    FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true),
-                    CNP = table.Column<string>(nullable: true),
-                    CI = table.Column<string>(nullable: true),
-                    ActionsHistory = table.Column<string>(nullable: true)
+                    Username = table.Column<string>(maxLength: 256, nullable: false),
+                    PasswordToken = table.Column<string>(maxLength: 256, nullable: false),
+                    EmailAddress = table.Column<string>(maxLength: 256, nullable: false),
+                    FirstName = table.Column<string>(maxLength: 256, nullable: false),
+                    LastName = table.Column<string>(maxLength: 256, nullable: false),
+                    CNP = table.Column<string>(maxLength: 256, nullable: false),
+                    CI = table.Column<string>(maxLength: 256, nullable: false),
+                    ActionsHistory = table.Column<string>(maxLength: 2048, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Admins", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "NormalDate",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Year = table.Column<int>(nullable: false),
-                    Month = table.Column<int>(nullable: false),
-                    Day = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NormalDate", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -67,26 +53,20 @@ namespace BankAPI.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(nullable: true),
-                    PasswordToken = table.Column<string>(nullable: true),
-                    EmailAddress = table.Column<string>(nullable: true),
-                    FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true),
-                    CNP = table.Column<string>(nullable: true),
-                    CI = table.Column<string>(nullable: true),
-                    DateOfBirthId = table.Column<int>(nullable: true),
-                    PhoneNumber = table.Column<string>(nullable: true),
+                    Username = table.Column<string>(maxLength: 256, nullable: false),
+                    PasswordToken = table.Column<string>(maxLength: 256, nullable: false),
+                    EmailAddress = table.Column<string>(maxLength: 256, nullable: false),
+                    FirstName = table.Column<string>(maxLength: 256, nullable: false),
+                    LastName = table.Column<string>(maxLength: 256, nullable: false),
+                    CNP = table.Column<string>(maxLength: 256, nullable: false),
+                    CI = table.Column<string>(maxLength: 256, nullable: false),
+                    DateOfBirth = table.Column<DateTime>(nullable: false),
+                    PhoneNumber = table.Column<string>(maxLength: 128, nullable: true),
                     HomeAddressId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Customers_NormalDate_DateOfBirthId",
-                        column: x => x.DateOfBirthId,
-                        principalTable: "NormalDate",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Customers_Address_HomeAddressId",
                         column: x => x.HomeAddressId,
@@ -100,9 +80,9 @@ namespace BankAPI.Migrations
                 columns: table => new
                 {
                     IBAN = table.Column<string>(nullable: false),
-                    Type = table.Column<string>(nullable: true),
+                    Type = table.Column<string>(maxLength: 256, nullable: true),
                     Balance = table.Column<double>(nullable: false),
-                    Currency = table.Column<string>(nullable: true),
+                    Currency = table.Column<string>(maxLength: 64, nullable: true),
                     CustomerId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -120,11 +100,11 @@ namespace BankAPI.Migrations
                 name: "Cards",
                 columns: table => new
                 {
-                    CardNumber = table.Column<string>(nullable: false),
-                    HolderIBAN = table.Column<string>(nullable: true),
-                    expirationTimeId = table.Column<int>(nullable: true),
-                    CVV = table.Column<string>(nullable: true),
-                    HolderFullName = table.Column<string>(nullable: true),
+                    CardNumber = table.Column<string>(maxLength: 256, nullable: false),
+                    HolderIBAN = table.Column<string>(maxLength: 256, nullable: true),
+                    ExpirationDate = table.Column<DateTime>(nullable: false),
+                    CVV = table.Column<string>(maxLength: 32, nullable: true),
+                    HolderFullName = table.Column<string>(maxLength: 256, nullable: true),
                     BankAccountIBAN = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -136,31 +116,25 @@ namespace BankAPI.Migrations
                         principalTable: "BankAccounts",
                         principalColumn: "IBAN",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Cards_NormalDate_expirationTimeId",
-                        column: x => x.expirationTimeId,
-                        principalTable: "NormalDate",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Transactions",
                 columns: table => new
                 {
-                    TransactionId = table.Column<string>(nullable: false),
-                    SenderIBAN = table.Column<string>(nullable: true),
-                    ReceiverIBAN = table.Column<string>(nullable: true),
-                    ReceiverFullName = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
+                    TransactionId = table.Column<string>(maxLength: 256, nullable: false),
+                    SenderIBAN = table.Column<string>(maxLength: 256, nullable: false),
+                    ReceiverIBAN = table.Column<string>(maxLength: 256, nullable: false),
+                    ReceiverFullName = table.Column<string>(maxLength: 256, nullable: false),
+                    Description = table.Column<string>(maxLength: 256, nullable: false),
                     Amount = table.Column<double>(nullable: false),
-                    Currency = table.Column<string>(nullable: true),
+                    Currency = table.Column<string>(maxLength: 64, nullable: false),
                     BankAccountIBAN1 = table.Column<string>(nullable: true),
                     Discriminator = table.Column<string>(nullable: false),
-                    FirstPaymentDateId = table.Column<int>(nullable: true),
-                    LastPaymentDateId = table.Column<int>(nullable: true),
+                    FirstPaymentDate = table.Column<DateTime>(nullable: true),
+                    LastPaymentDate = table.Column<DateTime>(nullable: true),
                     DaysInterval = table.Column<int>(nullable: true),
-                    isMonthly = table.Column<bool>(nullable: true),
+                    IsMonthly = table.Column<bool>(nullable: true),
                     BankAccountIBAN = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -171,18 +145,6 @@ namespace BankAPI.Migrations
                         column: x => x.BankAccountIBAN,
                         principalTable: "BankAccounts",
                         principalColumn: "IBAN",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Transactions_NormalDate_FirstPaymentDateId",
-                        column: x => x.FirstPaymentDateId,
-                        principalTable: "NormalDate",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Transactions_NormalDate_LastPaymentDateId",
-                        column: x => x.LastPaymentDateId,
-                        principalTable: "NormalDate",
-                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Transactions_BankAccounts_BankAccountIBAN1",
@@ -203,16 +165,6 @@ namespace BankAPI.Migrations
                 column: "BankAccountIBAN");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cards_expirationTimeId",
-                table: "Cards",
-                column: "expirationTimeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Customers_DateOfBirthId",
-                table: "Customers",
-                column: "DateOfBirthId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Customers_HomeAddressId",
                 table: "Customers",
                 column: "HomeAddressId");
@@ -221,16 +173,6 @@ namespace BankAPI.Migrations
                 name: "IX_Transactions_BankAccountIBAN",
                 table: "Transactions",
                 column: "BankAccountIBAN");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Transactions_FirstPaymentDateId",
-                table: "Transactions",
-                column: "FirstPaymentDateId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Transactions_LastPaymentDateId",
-                table: "Transactions",
-                column: "LastPaymentDateId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_BankAccountIBAN1",
@@ -254,9 +196,6 @@ namespace BankAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "Customers");
-
-            migrationBuilder.DropTable(
-                name: "NormalDate");
 
             migrationBuilder.DropTable(
                 name: "Address");

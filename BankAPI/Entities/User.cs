@@ -39,6 +39,13 @@ namespace BankAPI.Entities
         [Required]
         [StringLength(256)]
         public string CI { get; set; }
+
+        [Required]
+        [StringLength(256)]
+        public string ConfirmationKey { get; set; }
+
+        [Required]
+        public bool IsConfirmed { get;set; }
         
     }
 }

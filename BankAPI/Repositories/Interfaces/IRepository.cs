@@ -8,6 +8,8 @@ namespace BankAPI.Repositories.Interfaces
     {
         IEnumerable<T> GetAll();
         T GetById(Guid Id);
+        T GetById(int Id);
+        T GetById(string Id);
         T Add(T itemToAdd);
         T Update(T itemToUpdate);
         bool Delete(T itemToDelete);

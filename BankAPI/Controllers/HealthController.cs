@@ -14,5 +14,12 @@ namespace BankAPI.Controllers
         {
             return "Healthy";
         }
+
+        [HttpGet]
+        [Route("gettest")]
+        public string GetTest()
+        {
+            return "I returned!";
+        }
     }
 }

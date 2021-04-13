@@ -29,6 +29,18 @@ namespace BankAPI.Repositories
                             .Find(Id);
         }
 
+        public T GetById(int Id)
+        {
+            return dbContext.Set<T>()
+                .Find(Id);
+        }
+
+        public T GetById(string Id)
+        {
+            return dbContext.Set<T>()
+                .Find(Id);
+        }
+
         public bool Delete(T itemToDelete)
         {
             dbContext.Remove<T>(itemToDelete);

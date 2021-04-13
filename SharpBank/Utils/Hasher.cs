@@ -9,7 +9,6 @@ namespace SharpBank.Utils
 {
     public class Hasher
     {
-
         public static string ComputeB64HashWithSha256(string unecryptedText)
         {
             Byte[] salt = GenerateSalt(Constants.kSaltSize);

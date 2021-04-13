@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SharpBank.Utils
+namespace BankAPI.Utilities
 {
-    public static class Constants
+    public static  class Constants
     {
-        public const int kSaltSize = 100;
         public const string kBankApiDomain = "https://localhost:5005";
+
+        public const string kDelimiterToken = "_1ZpW3jK315LrrPqNnmZhJlRt_";
     }
 }

@@ -7,51 +7,102 @@ using BankAPI.Context;
 using BankAPI.Entities;
 using BankAPI.Models;
 using BankAPI.Repositories;
+using BankAPI.Services;
+using BankAPI.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace BankAPI.Controllers
 {
-    [Route("api/user")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
         private readonly BankContext _bankContext;
-        private readonly CustomerRepository _customerRepository;
-        
-        public UserController(ILogger<UserController> logger, BankContext bankContext)
+        private readonly CustomerService _customerService;
+
+        public UserController(ILogger<UserController> logger, BankContext bankContext, CustomerService customerService)
         {
             _logger = logger;
             _bankContext = bankContext;
+            _customerService = customerService;
         }
 
         [HttpPost]
-        public ContentResult SignupRequest(SignupFormModel signupFormData)
+        [Route("signuprequest")]
+        public async Task<HttpResponseMessage> SignupRequest(SignupFormModel signupFormData)
         {
-            Customer newCustomer = new Customer();
 
-            var queryResult = _bankContext.Customers
-                .Where(client => (client.CNP == signupFormData.Cnp || client.Username == signupFormData.Username))
-                .FirstOrDefault();
+            HttpResponseMessage httpResponse = new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+                Content = new StringContent("Query successful : user added to database!")
+            };
 
-            if (queryResult == new Customer())
-                return Content("Query failed because an user with the same data already exists");
+            string confirmationKey = _customerService.GenerateSignupConfirmationKey();
 
-            newCustomer.FirstName = signupFormData.FirstName;
-            newCustomer.LastName = signupFormData.LastName;
-            newCustomer.Username = signupFormData.Username;
-            newCustomer.PasswordToken = signupFormData.Password;
-            newCustomer.PhoneNumber = "NA";
-            newCustomer.EmailAddress = signupFormData.Email;
-            newCustomer.CI = signupFormData.Ci;
-            newCustomer.CNP = signupFormData.Cnp;
+            Customer newCustomer = new Customer
+            {
+                FirstName = signupFormData.FirstName,
+                LastName = signupFormData.LastName,
+                Username = signupFormData.Username,
+                PasswordToken = signupFormData.Password,
+                PhoneNumber = "NA",
+                EmailAddress = signupFormData.Email,
+                CI = signupFormData.Ci,
+                CNP = signupFormData.Cnp,
+                ConfirmationKey = confirmationKey,
+                IsConfirmed = false
+            };
 
-            _customerRepository.Add(newCustomer);
+            if (_customerService.AddCustomer(newCustomer))
+            {
+                _customerService.SendSignupConfirmation(newCustomer, confirmationKey);
 
-            return Content("Query successful : user added to database!");
+                return httpResponse;
+            }
+
+            httpResponse.StatusCode = System.Net.HttpStatusCode.BadRequest;
+            httpResponse.Content = new StringContent("Query unsuccessful : user NOT added to database");
+
+            return httpResponse;
         }
 
+        [HttpGet]
+        [Route("validateconfirmation")]
+        public HttpResponseMessage ValidateConfirmation([FromQuery(Name = "confirmationToken")]string confirmationToken)
+        {
+            string key = "bce2ea2315a1916b14ca5898a4e4133b";
+            confirmationToken = confirmationToken.Replace(' ', '+');
+            string decryptedConfirmationToken = Codec.DecryptString(key, confirmationToken);
+
+            string[] tokenData = decryptedConfirmationToken.Split(new string[] { Constants.kDelimiterToken }, StringSplitOptions.None);
+
+            if (tokenData.Length < 3)
+                return new HttpResponseMessage
+                {
+                    StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    Content = new StringContent("Query unsuccessful : Bad token")
+                }; 
+
+            string username = tokenData[0];
+            string email = tokenData[1];
+            string confirmationKey = tokenData[2];
+
+            if (_customerService.ValidateCustomer(email, username, confirmationKey))
+                return new HttpResponseMessage
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Content = new StringContent("Query successful : user validated!")
+                };
+
+            return new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.BadRequest,
+                Content = new StringContent("Query unsuccessful : user NOT validated!")
+            };
+        }
     }
 }
