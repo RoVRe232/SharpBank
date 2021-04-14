@@ -4,6 +4,7 @@ using BankAPI.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace BankAPI.Repositories
@@ -23,6 +24,11 @@ namespace BankAPI.Repositories
             return dbContext.Customers
                             .Where(client => client.Username == username && client.EmailAddress == email)
                             .FirstOrDefault();
+        }
+
+        public IQueryable<Customer> GetQuery(Expression<Func<Customer, bool>> expression)
+        {
+            return dbContext.Customers.Where(expression);
         }
 
         public void AddCustomer(Customer customer)

@@ -13,18 +13,16 @@ namespace BankAPI.Services
     public class CustomerService : ICustomerService
     {
         private ICustomerRepository customerRepository;
-        private BankContext _bankContext;
 
-        public CustomerService(ICustomerRepository customerRepository, BankContext bankContext)
+        public CustomerService(ICustomerRepository customerRepository)
         {
             this.customerRepository = customerRepository;
-            _bankContext = bankContext;
         }
 
         public bool AddCustomer(Customer customer)
         {
-            var queryResult = _bankContext.Customers
-                .Where(client => (client.CNP == customer.CNP || client.Username == customer.Username || client.EmailAddress == customer.EmailAddress))
+            var queryResult = customerRepository
+                .GetQuery(client => (client.CNP == customer.CNP || client.Username == customer.Username || client.EmailAddress == customer.EmailAddress))
                 .FirstOrDefault();
 
             if (queryResult!=null)

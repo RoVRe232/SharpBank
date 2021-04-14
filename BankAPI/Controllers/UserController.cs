@@ -12,6 +12,7 @@ using BankAPI.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SharpBank.Models;
 
 namespace BankAPI.Controllers
 {
@@ -104,5 +105,14 @@ namespace BankAPI.Controllers
                 Content = new StringContent("Query unsuccessful : user NOT validated!")
             };
         }
+
+        [HttpPost]
+        [Route("loginrequest")]
+        public HttpResponseMessage LoginRequest(LoginFormModel loginModel)
+        {
+            //TODO implement Login validation and JWT Auth implementation
+            throw new NotImplementedException();
+        }
+
     }
 }

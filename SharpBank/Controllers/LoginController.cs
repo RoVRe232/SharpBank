@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SharpBank.Models.Login;
+using SharpBank.Utils;
 
 namespace SharpBank.Controllers
 {
@@ -20,14 +22,14 @@ namespace SharpBank.Controllers
         }
 
         [HttpPost]
-        public IActionResult Connect(LoginFormModel model)
+        public IActionResult Connect(LoginFormModel loginForm)
         {
-            String username = model.username;
-            String password = model.password;
+            loginForm.Password = Hasher.ComputeB64HashWithSha256(loginForm.Password);
 
-            if (String.IsNullOrEmpty(username) || String.IsNullOrEmpty(password) ||
-                                    !(username.Equals("admin") && password.Equals("admin")))
-                return RedirectToAction(actionName: "LoginFailed", controllerName: "Login");
+            var response = loginForm.SendLoginRequestToApiAsync();
+
+            if (response.Equals(HttpStatusCode.OK))
+                return RedirectToAction(actionName: "LoginConfirmation", controllerName: "Signup");
 
             return RedirectToAction(actionName: "Index", controllerName: "Home");
         }
