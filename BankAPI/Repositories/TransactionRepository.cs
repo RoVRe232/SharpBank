@@ -41,17 +41,8 @@ namespace BankAPI.Repositories
             return transactions;
         }
 
-        public void AddTransaction(Transaction transaction)
+        public void AddTransaction(Transaction transaction, BankAccount senderBankAccount)
         {
-            dbContext.Transactions.Add(transaction);
-
-            var senderBankAccount = dbContext.BankAccounts
-                .Where(bankAccount => bankAccount.IBAN.Equals(transaction.SenderIBAN))
-                .FirstOrDefault();
-
-            if (senderBankAccount == null || senderBankAccount == new BankAccount())
-                return;
-
             senderBankAccount.Transactions.Add(transaction);
             dbContext.BankAccounts.Update(senderBankAccount);
         }

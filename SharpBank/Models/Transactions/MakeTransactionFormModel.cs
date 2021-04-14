@@ -19,16 +19,5 @@ namespace SharpBank.Models.Transactions
         public double Amount { get; set; }
         public double Currency { get; set; }
 
-        public async Task<HttpResponseMessage> SendNewTransactionRequestToApiAsync()
-        {
-            var signupFormModelJSON = JsonConvert.SerializeObject(this);
-            var requestContent = new StringContent(signupFormModelJSON, Encoding.UTF8, "application/json");
-            var requestUri = new Uri($"{Constants.kBankApiDomain}/api/transactions/newtransaction");
-
-            var response = await HttpService.Instance.httpClient.PostAsync(requestUri, requestContent);
-            response.EnsureSuccessStatusCode();
-
-            return response;
-        }
     }
 }

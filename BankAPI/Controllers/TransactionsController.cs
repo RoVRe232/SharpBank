@@ -15,17 +15,18 @@ namespace BankAPI.Controllers
     public class TransactionsController : ControllerBase
     {
         private TransactionService _transactionService;
+        private CustomerService _customerService;
 
-        public TransactionsController(TransactionService transactionService)
+        public TransactionsController(TransactionService transactionService, CustomerService customerService)
         {
             _transactionService = transactionService;
+            _customerService = customerService;
         }
 
         [HttpPost]
         [Route("newtransaction")]
         public async Task<HttpResponseMessage> NewTransactionRequest(MakeTransactionFormModel transactionFormData)
         {
-
             HttpResponseMessage httpResponse = new HttpResponseMessage
             {
                 StatusCode = System.Net.HttpStatusCode.OK,
@@ -41,6 +42,17 @@ namespace BankAPI.Controllers
                 Amount = transactionFormData.Amount,
                 Currency = transactionFormData.Currency.ToString()//TODO change this to really interpret the code of the currency
             };
+
+            //TEST- TODO: DELETE THIS BLOCK AFTER TEST
+            var testCustomer = _customerService.GetCustomerByUsername("paraschivescumaria");
+            var bankAccount = new BankAccount
+            {
+
+            };
+            _customerService.AddBankAccount(bankAccount, new Customer());
+
+
+            //END OF TEST
 
             if (_transactionService.AddTransaction(newTransaction))
                 return httpResponse;

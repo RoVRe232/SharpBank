@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace BankAPI.Repositories.Interfaces
 {
-    public interface ITransactionRepository
+    public interface ITransactionRepository : IRepository<Entities.Transaction>
     {
-        public Entities.Transaction GetTransactionById(string id);
-        public void AddTransaction(Entities.Transaction customer);
+        Entities.Transaction GetTransactionById(string id);
+        void AddTransaction(Entities.Transaction customer, Entities.BankAccount senderBankAccount);
 
     }
 }

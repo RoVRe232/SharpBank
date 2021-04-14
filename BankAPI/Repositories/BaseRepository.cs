@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 using BankAPI.Context;
 using BankAPI.Repositories.Interfaces;
+using System.Linq.Expressions;
 
 namespace BankAPI.Repositories
 {
@@ -14,6 +15,11 @@ namespace BankAPI.Repositories
         public BaseRepository(BankContext dbContext)
         {
             this.dbContext = dbContext;
+        }
+
+        public IQueryable<T> GetQuery(Expression<Func<T, bool>> expression)
+        {
+            return dbContext.Set<T>().Where(expression);
         }
 
         public T Add(T itemToAdd)
@@ -61,6 +67,5 @@ namespace BankAPI.Repositories
             dbContext.SaveChanges();
             return entity.Entity;
         }
-
     }
 }

@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using SharpBank.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SharpBank.Services
@@ -23,6 +26,18 @@ namespace SharpBank.Services
             {
                 return instance;
             }
+        }
+
+        public async Task<HttpResponseMessage> SendRequestToApiAsync<T>(T model, string endpoint)
+        {
+            var signupFormModelJSON = JsonConvert.SerializeObject(model);
+            var requestContent = new StringContent(signupFormModelJSON, Encoding.UTF8, "application/json");
+            var requestUri = new Uri($"{Constants.kBankApiDomain}{endpoint}");
+
+            var response = await Instance.httpClient.PostAsync(requestUri, requestContent);
+            response.EnsureSuccessStatusCode();
+
+            return response;
         }
 
     }

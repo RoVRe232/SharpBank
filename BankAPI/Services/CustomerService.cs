@@ -13,18 +13,18 @@ namespace BankAPI.Services
     public class CustomerService : ICustomerService
     {
         private ICustomerRepository customerRepository;
-        private BankContext _bankContext;
+        private IBankAccountsRepository bankAccountsRepository;
 
-        public CustomerService(ICustomerRepository customerRepository, BankContext bankContext)
+        public CustomerService(ICustomerRepository customerRepository, IBankAccountsRepository bankAccountsRepository)
         {
             this.customerRepository = customerRepository;
-            _bankContext = bankContext;
+            this.bankAccountsRepository = bankAccountsRepository;
         }
 
         public bool AddCustomer(Customer customer)
         {
-            var queryResult = _bankContext.Customers
-                .Where(client => (client.CNP == customer.CNP || client.Username == customer.Username || client.EmailAddress == customer.EmailAddress))
+            var queryResult = customerRepository
+                .GetQuery(client => (client.CNP == customer.CNP || client.Username == customer.Username || client.EmailAddress == customer.EmailAddress))
                 .FirstOrDefault();
 
             if (queryResult!=null)
@@ -32,6 +32,30 @@ namespace BankAPI.Services
 
             customerRepository.Add(customer);
             return true;
+        }
+
+        public bool AddBankAccount(BankAccount bankAccount, Customer customer)
+        {
+            // Check if bank account already exists in the repository
+            var queryResult = bankAccountsRepository
+                .GetQuery(e => e.IBAN.Equals(bankAccount.IBAN))
+                .FirstOrDefault();
+
+            customer.BankAccounts.Add(bankAccount);
+            customerRepository.Update(customer);
+            //bankAccountsRepository.Add(bankAccount); //this should not be necessary?
+            
+            if (queryResult != null)
+                return false;
+
+            return true;
+        }
+
+        public Customer GetCustomerByUsername(string username)
+        {
+            return customerRepository
+                .GetQuery(e => e.Username.Equals(username))
+                .FirstOrDefault();
         }
 
         public void SendSignupConfirmation(Customer newCustomer, string confirmationKey)
