@@ -84,7 +84,7 @@ namespace BankAPI.Services
                 .GetQuery(exp => exp.Username.Equals(loginForm.Username) && exp.PasswordToken.Equals(loginForm.Password))
                 .FirstOrDefault();
             if (user == null)
-                return false;
+                return null;
 
             return GenerateJwtToken(loginForm);
         }
