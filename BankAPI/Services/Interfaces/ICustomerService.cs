@@ -1,4 +1,5 @@
 ﻿using BankAPI.Entities;
+using SharpBank.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

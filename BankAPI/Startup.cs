@@ -40,6 +40,7 @@ namespace BankAPI
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped<CustomerService>();
 
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

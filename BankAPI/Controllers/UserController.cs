@@ -110,8 +110,19 @@ namespace BankAPI.Controllers
         [Route("loginrequest")]
         public HttpResponseMessage LoginRequest(LoginFormModel loginModel)
         {
-            //TODO implement Login validation and JWT Auth implementation
-            throw new NotImplementedException();
+            string token = _customerService.Authenticate(loginModel);
+            if(token == null)
+                return new HttpResponseMessage
+                {
+                    StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    Content = new StringContent("Query unsuccessful : user NOT logged in!")
+                };
+
+            return new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+                Content = new StringContent(token)
+            };
         }
 
     }

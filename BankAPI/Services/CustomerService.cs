@@ -3,9 +3,14 @@ using BankAPI.Entities;
 using BankAPI.Repositories.Interfaces;
 using BankAPI.Services.Interfaces;
 using BankAPI.Utilities;
+using Microsoft.IdentityModel.Tokens;
+using SharpBank.Models;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace BankAPI.Services
@@ -71,6 +76,33 @@ namespace BankAPI.Services
             }
 
             return false;
+        }
+
+        public string Authenticate(LoginFormModel loginForm)
+        {
+            var user = customerRepository
+                .GetQuery(exp => exp.Username.Equals(loginForm.Username) && exp.PasswordToken.Equals(loginForm.Password))
+                .FirstOrDefault();
+            if (user == null)
+                return false;
+
+            return GenerateJwtToken(loginForm);
+        }
+
+        private string GenerateJwtToken(LoginFormModel loginForm)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("ajdkwjeq=JDDkkeqeODOdsdsdaqeSDJJFkekekd");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("id", loginForm.Username.ToString()) }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+
+            throw new NotImplementedException();
         }
 
         public void DeleteCustomer()
