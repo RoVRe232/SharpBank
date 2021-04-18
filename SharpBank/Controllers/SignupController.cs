@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SharpBank.Models;
 using SharpBank.Models.Login;
+using SharpBank.Services;
 using SharpBank.Utils;
 
 namespace SharpBank.Controllers
@@ -38,7 +39,7 @@ namespace SharpBank.Controllers
             signupForm.ConfirmPassword = signupForm.Password;
 
             //response should contain a token that will need to match up with a registration code sent by email
-            var response = await signupForm.SendSignupRequestToApiAsync();
+            var response = await HttpService.Instance.SendRequestToApiAsync(signupForm, "/api/user/signuprequest");
             
             if(response.StatusCode.Equals(HttpStatusCode.OK))
                 return RedirectToAction(actionName: "SignupConfirmation", controllerName: "Signup");

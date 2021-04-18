@@ -18,10 +18,12 @@ namespace BankAPI.Services
     public class CustomerService : ICustomerService
     {
         private ICustomerRepository customerRepository;
+        private IBankAccountsRepository bankAccountsRepository;
 
-        public CustomerService(ICustomerRepository customerRepository)
+        public CustomerService(ICustomerRepository customerRepository, IBankAccountsRepository bankAccountsRepository)
         {
             this.customerRepository = customerRepository;
+            this.bankAccountsRepository = bankAccountsRepository;
         }
 
         public bool AddCustomer(Customer customer)
@@ -35,6 +37,57 @@ namespace BankAPI.Services
 
             customerRepository.Add(customer);
             return true;
+        }
+
+        public bool AddBankAccount(BankAccount bankAccount, Customer customer)
+        {
+            // Check if bank account already exists in the repository
+            var queryResult = bankAccountsRepository
+                .GetQuery(e => e.IBAN.Equals(bankAccount.IBAN))
+                .FirstOrDefault();
+
+            customer.BankAccounts.Add(bankAccount);
+            customerRepository.Update(customer);
+            //bankAccountsRepository.Add(bankAccount); //this should not be necessary?
+            
+            if (queryResult != null)
+                return false;
+
+            return true;
+        }
+        public string Authenticate(LoginFormModel loginForm)
+        {
+            var user = customerRepository
+                .GetQuery(exp => exp.Username.Equals(loginForm.Username) && exp.PasswordToken.Equals(loginForm.Password))
+                .FirstOrDefault();
+            if (user == null)
+                return null;
+
+            return GenerateJwtToken(loginForm);
+        }
+
+        private string GenerateJwtToken(LoginFormModel loginForm)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("ajdkwjeq=JDDkkeqeODOdsdsdaqeSDJJFkekekd");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("id", loginForm.Username.ToString()) }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+
+            throw new NotImplementedException();
+        }
+
+
+        public Customer GetCustomerByUsername(string username)
+        {
+            return customerRepository
+                .GetQuery(e => e.Username.Equals(username))
+                .FirstOrDefault();
         }
 
         public void SendSignupConfirmation(Customer newCustomer, string confirmationKey)
@@ -78,33 +131,6 @@ namespace BankAPI.Services
             return false;
         }
 
-        public string Authenticate(LoginFormModel loginForm)
-        {
-            var user = customerRepository
-                .GetQuery(exp => exp.Username.Equals(loginForm.Username) && exp.PasswordToken.Equals(loginForm.Password))
-                .FirstOrDefault();
-            if (user == null)
-                return null;
-
-            return GenerateJwtToken(loginForm);
-        }
-
-        private string GenerateJwtToken(LoginFormModel loginForm)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("ajdkwjeq=JDDkkeqeODOdsdsdaqeSDJJFkekekd");
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", loginForm.Username.ToString()) }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-
-            throw new NotImplementedException();
-        }
-
         public void DeleteCustomer()
         {
             throw new NotImplementedException();
@@ -122,7 +148,8 @@ namespace BankAPI.Services
 
         public void MakeTransaction()
         {
-            throw new NotImplementedException();
+
+
         }
 
         public void RequestBankAccountCloseup()

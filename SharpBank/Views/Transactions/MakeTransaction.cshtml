@@ -87,16 +87,16 @@
     <br />
     <h3 class="text-center" style="padding:30px;">Please enter the transaction details below</h3>
     <br />
-    <form action="/action_page.php" class="col-sm-6">
+    <form method="post" enctype="multipart/form-data" asp-controller="Transactions" asp-action="AddNewTransaction" class="col-sm-6">
         <div class="input-group-prepend">
             <div class="input-group-prepend">
-                <label class="input-group-text" for="inputGroupSelect01">Sender Account</label>
+                <label class="input-group-text" for="selectSenderIban">Sender Account</label>
             </div>
-            <select class="custom-select" id="inputGroupSelect01">
+            <select class="custom-select" id="selectSenderIban" name="senderIban">
                 <option selected>Choose...</option>
-                <option value="1">IBAN1</option>
-                <option value="2">IBAN2</option>
-                <option value="3">IBAN3</option>
+                <option value="1234567">IBAN1</option>
+                <option value="2333333">IBAN2</option>
+                <option value="3346363">IBAN3</option>
             </select>
         </div>
 
@@ -105,7 +105,15 @@
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon3">IBAN</span>
             </div>
-            <input type="text" class="form-control" id="receiver-id" aria-describedby="basic-addon3">
+            <input type="text" name="receiverIban" class="form-control" id="receiver-id" aria-describedby="basic-addon3">
+        </div>
+
+        <label for="receiver-name">Receiver's full name (E.g. Johnatan Andrew-Smith)</label>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon3">Full name</span>
+            </div>
+            <input type="text" name="receiverFullName" class="form-control" id="receiver-full-name" aria-describedby="basic-addon3">
         </div>
 
         <label for="transaction-description">Transaction description</label>
@@ -113,30 +121,29 @@
             <div class="input-group-prepend">
                 <span class="input-group-text">Description</span>
             </div>
-            <textarea class="form-control" aria-label="Description" id="transaction-description"></textarea>
+            <textarea class="form-control" name="description" aria-label="Description" id="transaction-description"></textarea>
         </div>
 
-        <label for="transaction-description">Transaction amount</label>
+        <label for="transaction-amount">Transaction amount</label>
         <div class="row">
-            <div class="input-group col-sm-6">
+            <div class="input-group col-sm-8">
                 <div class="input-group-prepend">
                     <span class="input-group-text">$</span>
                 </div>
-                <input type="text" class="form-control" aria-label="Amount">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Currency</button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">RON</a>
-                        <div role="separator" class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">EUR</a>
-                        <a class="dropdown-item" href="#">USD</a>
-                    </div>
+                <input name="amount" type="text" class="form-control" aria-label="Amount">
+                <div class="input-group-prepend">
+                    <select class="custom-select" id="selectCurrency" name="currency">
+                        <option selected>Currency...</option>
+                        <option value="1">RON</option>
+                        <option value="2">EUR</option>
+                        <option value="3">USD</option>
+                    </select>
                 </div>
+
+                <div class="col-sm-1"></div>
+                <button type="submit" class="btn btn-primary col-sm-4 ml-auto mr-auto"><i class="fas fa-paper-plane"></i>Submit</button>
             </div>
-
-            <button type="submit" class="btn btn-primary col-sm-2 ml-auto mr-auto"><i class="fas fa-paper-plane"></i>Submit</button>
         </div>
-
     </form>
 </div>
 <script src='~/lib/chartjs/dist/Chart.bundle.js'></script>
