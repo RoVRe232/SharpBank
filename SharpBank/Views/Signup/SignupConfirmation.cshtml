@@ -11,23 +11,10 @@
 
 <div class="row">
     <div class="container col-sm-6">
-
-        <h2 class="text-center">Email confirmation</h2>
+        <h2 class="text-center">Confirmation email sent!</h2>
+        <p>Please check your inbox to see if you received the email sent to confirm your account.</p>
+        <p><b>Note:</b> An unconfirmed account will not be able to use any of the functionalities provided by the application.</p>
         <br />
-        <p>Please complete the form below with the code received on your email</p>
         <p>Did not receive an email? <a asp-controller="Signup" asp-action="ResenedConfirmation"><u>Resend confirmation mail.</u></a> </p>
-        <form method="post" enctype="multipart/form-data" asp-controller="Signup" asp-action="SendConfirmationNumber">
-
-            <div class="form-group">
-                <label for="code">Security Code:</label>
-                <input name="code" type="text" class="form-control formInput" id="code" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary col-sm-4">Sign up</button>
-
-            <small class="text-center">All data is being processed by our program and will not be shared or used outside it.</small>
-            <a href="#">Our Terms of Service</a>
-        </form>
-
     </div>
 </div>
