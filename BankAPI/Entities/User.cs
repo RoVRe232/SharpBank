@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BankAPI.Entities
@@ -46,6 +47,8 @@ namespace BankAPI.Entities
 
         [Required]
         public bool IsConfirmed { get;set; }
-        
+
+        [JsonIgnore]
+        public List<RefreshToken> RefreshTokens { get; set; }
     }
 }

@@ -5,51 +5,6 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 <link rel="stylesheet" href="~/css/home.css" type="text/css">
 
-<nav class="navbar navbar-expand-md bg-light navbar-light">
-    <a class="navbar-brand" href="#">SharpBank</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Home</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Accounts</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Overview</a>
-                    <a class="dropdown-item" href="#">Add Account</a>
-                    <a class="dropdown-item" href="#">New transfer</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Bills</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Overview</a>
-                    <a class="dropdown-item" href="#">Pay bill</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Transactions</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Overview</a>
-                    <a class="dropdown-item" href="#">Make transaction</a>
-                    <a class="dropdown-item" href="#">Detailed history</a>
-                </div>
-            </li>
-        </ul>
-        <ul class="nav navbar-nav ml-auto">
-            <li class="nav-item">
-                <a href="#" class="nav-link"><i class="fas fa-user"></i>User</a>
-            </li>
-            <li>
-                <a href="#" class="nav-link"><i class="fas fa-sign-out-alt"></i>Sign out</a>
-            </li>
-        </ul>
-    </div>
-</nav>
-
 <div class="row">
     <div class="col-sm-2">
         <a asp-controller="Home" asp-action="Index"><img class="logo-img" src="~/content/images/Logo.png" /></a>

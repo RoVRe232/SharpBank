@@ -8,6 +8,50 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
+    <nav class="navbar navbar-expand-md bg-light navbar-light">
+        <a class="navbar-brand" href="#">SharpBank</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Accounts</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" asp-controller="Accounts" asp-action="Index">Overview</a>
+                        <a class="dropdown-item" asp-controller="Accounts" asp-action="AddAccount">Add Account</a>
+                        <a class="dropdown-item" href="#">New transfer</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Bills</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Overview</a>
+                        <a class="dropdown-item" href="#">Pay bill</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Transactions</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" asp-controller="Transactions" asp-action="Index">Overview</a>
+                        <a class="dropdown-item" asp-controller="Transactions" asp-action="MakeTransaction">Make transaction</a>
+                    </div>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"><i class="fas fa-user"></i>User</a>
+                </li>
+                <li>
+                    <a class="nav-link" asp-controller="Home" asp-action="Signout"><i class="fas fa-sign-out-alt"></i>Sign out</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

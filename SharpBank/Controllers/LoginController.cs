@@ -2,17 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SharpBank.Models.Login;
+using SharpBank.Services;
 using SharpBank.Utils;
 
 namespace SharpBank.Controllers
 {
     public class LoginController : Controller
     {
+        private LoginService _loginService;
+        public LoginController(LoginService loginService)
+        {
+            _loginService = loginService;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -24,29 +33,30 @@ namespace SharpBank.Controllers
         }
 
         [HttpPost]
-        public IActionResult Connect(LoginFormModel loginForm)
+        public async Task<IActionResult> Connect(LoginFormModel loginForm)
         {
             loginForm.Password = Hasher.ComputeB64HashWithSha256(loginForm.Password);
 
-            var response = loginForm.SendLoginRequestToApiAsync();
-
-            if (response.Equals(HttpStatusCode.OK))
+            var response = await HttpService.Instance.SendRequestToApiAsync(loginForm, "/api/user/loginrequest");
+            if (response.IsSuccessStatusCode)
             {
-                string responseContent = response.Result.Content.ToString();
+                string responseContent = await response.Content.ReadAsStringAsync();
 
                 const string sessionKey = "SharpBankSession";
                 var value = HttpContext.Session.GetString(sessionKey);
+
                 if (string.IsNullOrEmpty(value))
                 {
-                    var serializedJwtToken = JsonConvert.SerializeObject(responseContent);
-                    HttpContext.Session.SetString(sessionKey, serializedJwtToken);
+                    //var serializedJwtToken = JsonConvert.SerializeObject(responseContent);
+                    HttpContext.Session.SetString(sessionKey, responseContent);
                 }
                 else
                 {
-                    var loggedInToken = JsonConvert.DeserializeObject<string>(value);
-                    HttpContext.Session.SetString(sessionKey,"");
+                    HttpContext.Session.SetString(sessionKey, "");
                     return RedirectToAction(actionName: "Index", controllerName: "Login");
                 }
+
+                //TODO store jwt in session storage and use it for authorization with auth filters(role based)
 
                 return RedirectToAction(actionName: "Index", controllerName: "Home");
             }

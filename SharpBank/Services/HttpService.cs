@@ -35,10 +35,8 @@ namespace SharpBank.Services
             var requestUri = new Uri($"{Constants.kBankApiDomain}{endpoint}");
 
             var response = await Instance.httpClient.PostAsync(requestUri, requestContent);
-            response.EnsureSuccessStatusCode();
 
             return response;
         }
-
     }
 }

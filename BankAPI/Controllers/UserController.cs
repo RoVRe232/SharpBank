@@ -22,13 +22,17 @@ namespace BankAPI.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly BankContext _bankContext;
-        private readonly CustomerService _customerService;
 
-        public UserController(ILogger<UserController> logger, BankContext bankContext, CustomerService customerService)
+        private readonly CustomerService _customerService;
+        private readonly UserService _userService;
+
+        public UserController(ILogger<UserController> logger, BankContext bankContext, 
+            CustomerService customerService, UserService userService)
         {
             _logger = logger;
             _bankContext = bankContext;
             _customerService = customerService;
+            _userService = userService;
         }
 
         [HttpPost]
@@ -108,22 +112,33 @@ namespace BankAPI.Controllers
 
         [HttpPost]
         [Route("loginrequest")]
-        public HttpResponseMessage LoginRequest(LoginFormModel loginModel)
+        public IActionResult LoginRequest(LoginFormModel loginModel)
         {
-            string token = _customerService.Authenticate(loginModel);
-            if(token == null)
-                return new HttpResponseMessage
-                {
-                    StatusCode = System.Net.HttpStatusCode.BadRequest,
-                    Content = new StringContent("Query unsuccessful : user NOT logged in!")
-                };
+            var response = _userService.Authenticate(loginModel, IpAddress());
+            if (response == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
 
-            return new HttpResponseMessage
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Content = new StringContent(token)
-            };
+            SetTokenCookie(response.RefreshToken);
+
+            return Ok(response);
         }
 
+        private void SetTokenCookie(string token)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+            Response.Cookies.Append("refreshToken", token, cookieOptions);
+        }
+
+        private string IpAddress()
+        {
+            if (Request.Headers.ContainsKey("X-Forwarded-For"))
+                return Request.Headers["X-Forwarded-For"];
+            else
+                return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+        }
     }
 }
