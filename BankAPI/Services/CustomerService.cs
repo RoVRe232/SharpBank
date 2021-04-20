@@ -47,17 +47,17 @@ namespace BankAPI.Services
                 .GetQuery(e => e.IBAN.Equals(bankAccount.IBAN))
                 .FirstOrDefault();
 
-            customer.BankAccounts.Add(bankAccount);
-            customerRepository.Update(customer);
-            //bankAccountsRepository.Add(bankAccount); //this should not be necessary?
-            
             if (queryResult != null)
                 return false;
 
+            if (customer.BankAccounts == null)
+                customer.BankAccounts = new List<BankAccount>();
+
+            customer.BankAccounts.Add(bankAccount);
+            customerRepository.Update(customer);
+
             return true;
         }
-       
-
 
         public Customer GetCustomerByUsername(string username)
         {

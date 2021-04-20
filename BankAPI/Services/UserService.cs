@@ -110,5 +110,6 @@ namespace BankAPI.Services
 
             return new AuthenticateResponse(user, jwtToken, newRefreshToken.Token);
         }
+
     }
 }

@@ -72,6 +72,23 @@ namespace SharpBank.Services
             httpContext.Session.SetString(sessionKey, "");
         }
 
+        public string GetLoggedInUsername(HttpContext httpContext)
+        {
+            const string sessionKey = "SharpBankSession";
+
+            var sessionUserIdentity = httpContext.Session.GetString(sessionKey);
+
+            if (string.IsNullOrEmpty(sessionUserIdentity))
+                return null;
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+
+            var userIdentity = JsonConvert.DeserializeObject<IdentityModel>(sessionUserIdentity);
+
+            return userIdentity.Username;
+        }
+
         private bool ValidateToken(string authToken)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

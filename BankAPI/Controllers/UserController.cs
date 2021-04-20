@@ -12,6 +12,7 @@ using BankAPI.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using SharpBank.Models;
 
 namespace BankAPI.Controllers
@@ -121,6 +122,38 @@ namespace BankAPI.Controllers
             SetTokenCookie(response.RefreshToken);
 
             return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("newbankaccount")]
+        public IActionResult CreateBankAccountRequest(NewBankAccountFormModel newBankAccountFormModel)
+        {
+            var user = _customerService.GetCustomerByUsername(newBankAccountFormModel.Username);
+            if (user == null)
+                return BadRequest(new { message = "Invalid request" });
+
+            BankAccount newBankAccount = new BankAccount
+            {
+                IBAN = Guid.NewGuid().ToString(),
+                Type = newBankAccountFormModel.AccountType,
+                Balance = 0,
+                Currency = newBankAccountFormModel.Currency,
+            };
+            _customerService.AddBankAccount(newBankAccount, user);
+
+            return Ok(new { message = "Request completed" });
+        }
+
+        [HttpPost]
+        [Route("accounts")]
+        public IActionResult GetBankAccounts([FromBody]string username)
+        {
+            var user = _customerService.GetCustomerByUsername(username);
+            if (user == null)
+                return BadRequest(new { message = "Invalid request" });
+
+            string serializedBankAccounts = JsonConvert.SerializeObject(user.BankAccounts);
+            return Ok(serializedBankAccounts);
         }
 
         private void SetTokenCookie(string token)

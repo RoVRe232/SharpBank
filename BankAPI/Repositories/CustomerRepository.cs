@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankAPI.Repositories
 {
@@ -15,6 +16,7 @@ namespace BankAPI.Repositories
         public Customer GetCustomerByUserId(int userId)
         {
             return dbContext.Customers
+                            .Include(e=>e.BankAccounts)
                             .Where(client => client.Id == userId)
                             .FirstOrDefault();
         }
@@ -28,7 +30,9 @@ namespace BankAPI.Repositories
 
         public IQueryable<Customer> GetQuery(Expression<Func<Customer, bool>> expression)
         {
-            return dbContext.Customers.Where(expression);
+            return dbContext.Customers
+                .Include(m=>m.BankAccounts)
+                .Where(expression);
         }
 
         public void AddCustomer(Customer customer)

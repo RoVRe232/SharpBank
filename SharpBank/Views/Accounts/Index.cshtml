@@ -1,6 +1,8 @@
 ﻿
 @{
     ViewData["Title"] = "Index";
+
+    var data = ViewBag.Message;
 }
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
@@ -54,12 +56,12 @@
         <tbody>
             <tr>
                 <th>1</th>
-                <th>RO008383842139923</th>
+                <th>@data[0].IBAN</th>
                 <th>
                     Visa, 0234 1544 **** **** <br />
                     MasterCard, 0434 6544 **** **** <br />
                 </th>
-                <th>8933 RON</th>
+                <th>@data[0].Balance @data[0].Currency</th>
                 <th>
                     <div>
                         <a class="action-button"><i class="far fa-money-bill-alt action-button-icon"></i></a>
@@ -68,12 +70,12 @@
             </tr>
             <tr>
                 <th>2</th>
-                <th>RO008383842139923</th>
+                <th>@data[1].IBAN</th>
                 <th>
                     Visa, 0234 1544 **** **** <br />
                     MasterCard, 0434 6544 **** **** <br />
                 </th>
-                <th>8933 RON</th>
+                <th>@data[1].Balance @data[1].Currency</th>
                 <th>
                     <div>
                         <a class="action-button"><i class="far fa-money-bill-alt action-button-icon"></i></a>
