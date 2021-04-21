@@ -56,8 +56,6 @@ namespace SharpBank.Controllers
                     return RedirectToAction(actionName: "Index", controllerName: "Login");
                 }
 
-                //TODO store jwt in session storage and use it for authorization with auth filters(role based)
-
                 return RedirectToAction(actionName: "Index", controllerName: "Home");
             }
 

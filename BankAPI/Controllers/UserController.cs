@@ -41,12 +41,6 @@ namespace BankAPI.Controllers
         public async Task<HttpResponseMessage> SignupRequest(SignupFormModel signupFormData)
         {
 
-            HttpResponseMessage httpResponse = new HttpResponseMessage
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Content = new StringContent("Query successful : user added to database!")
-            };
-
             string confirmationKey = _customerService.GenerateSignupConfirmationKey();
 
             Customer newCustomer = new Customer
@@ -67,13 +61,18 @@ namespace BankAPI.Controllers
             {
                 _customerService.SendSignupConfirmation(newCustomer, confirmationKey);
 
-                return httpResponse;
+                return new HttpResponseMessage
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Content = new StringContent("Query successful : user added to database!")
+                }; ;
             }
 
-            httpResponse.StatusCode = System.Net.HttpStatusCode.BadRequest;
-            httpResponse.Content = new StringContent("Query unsuccessful : user NOT added to database");
-
-            return httpResponse;
+            return new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.BadRequest,
+                Content = new StringContent("Query unsuccessful : user NOT added to database")
+            };
         }
 
         [HttpGet]

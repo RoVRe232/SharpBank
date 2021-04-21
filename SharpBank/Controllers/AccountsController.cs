@@ -31,16 +31,21 @@ namespace SharpBank.Controllers
             if (username == null)
                 return RedirectToAction(controllerName: "Login", actionName: "Index");
 
+            // Get bank accounts from API
             var response = HttpService.Instance.SendRequestToApiAsync(username, "/api/user/accounts").Result;
             if (!response.IsSuccessStatusCode)
                 return RedirectToAction(controllerName: "Home", actionName: "Index");
 
+            // Get json serialized bank accounts from response content
             var bankAccounts = response.Content.ReadAsStringAsync().Result;
             if (string.IsNullOrEmpty(bankAccounts))
                 return RedirectToAction(controllerName: "Home", actionName: "Index");
+
+            // Deserialize the bank accounts json into collection
             ICollection<BankAccountModel> bankAccountsArray = 
                 ((Newtonsoft.Json.Linq.JArray)JsonConvert.DeserializeObject(bankAccounts)).ToObject<List<BankAccountModel>>();
-
+            
+            // Send bank accounts array to view to be displayed
             ViewBag.Message = bankAccountsArray;
             return View();
         }
@@ -67,26 +72,6 @@ namespace SharpBank.Controllers
                 return RedirectToAction(controllerName: "Home", actionName: "Index");
 
             return RedirectToAction(controllerName: "Accounts", actionName: "AddAccount");
-        }
-
-        public async Task<IActionResult> GetCustomerAccounts()
-        {
-            // get logged in user's username
-            var username = _loginService.GetLoggedInUsername(HttpContext);
-            if (username == null)
-                return RedirectToAction(controllerName: "Login", actionName: "Index");
-
-            var response = await HttpService.Instance.SendRequestToApiAsync(username, "/api/user/accounts");
-            if(!response.IsSuccessStatusCode)
-                return RedirectToAction(controllerName: "Home", actionName: "Index");
-
-            var bankAccounts = await response.Content.ReadAsStringAsync();
-            if(string.IsNullOrEmpty(bankAccounts))
-                return RedirectToAction(controllerName: "Home", actionName: "Index");
-            ICollection<BankAccountModel> bankAccountsArray = (ICollection<BankAccountModel>)JsonConvert.DeserializeObject(bankAccounts);
-
-            //TODO output this data into view
-            return RedirectToAction(controllerName: "Accounts", actionName: "Index");
         }
     }
 }

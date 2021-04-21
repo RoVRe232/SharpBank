@@ -54,21 +54,24 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th>1</th>
-                <th>@data[0].IBAN</th>
-                <th>
-                    Visa, 0234 1544 **** **** <br />
-                    MasterCard, 0434 6544 **** **** <br />
-                </th>
-                <th>@data[0].Balance @data[0].Currency</th>
-                <th>
-                    <div>
-                        <a class="action-button"><i class="far fa-money-bill-alt action-button-icon"></i></a>
-                    </div>
-                </th>
-            </tr>
-            <tr>
+            @foreach(var item in data)
+            {
+                <tr>
+                    <th>1</th>
+                    <th>@item.IBAN</th>
+                    <th>
+                        Visa, 0234 1544 **** **** <br />
+                        MasterCard, 0434 6544 **** **** <br />
+                    </th>
+                    <th>@item.Balance @item.Currency</th>
+                    <th>
+                        <div>
+                            <a class="action-button"><i class="far fa-money-bill-alt action-button-icon"></i></a>
+                        </div>
+                    </th>
+                </tr>
+            }
+            @*<tr>
                 <th>2</th>
                 <th>@data[1].IBAN</th>
                 <th>
@@ -95,7 +98,7 @@
                         <a class="action-button"><i class="far fa-money-bill-alt action-button-icon"></i></a>
                     </div>
                 </th>
-            </tr>
+            </tr>*@
         </tbody>
     </table>
 </div>
