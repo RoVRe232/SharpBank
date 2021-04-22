@@ -40,19 +40,8 @@ namespace BankAPI.Controllers
                 ReceiverFullName = transactionFormData.ReceiverFullName,
                 Description = transactionFormData.Description,
                 Amount = transactionFormData.Amount,
-                Currency = transactionFormData.Currency.ToString()//TODO change this to really interpret the code of the currency
+                Currency = transactionFormData.Currency//TODO change this to really interpret the code of the currency
             };
-
-            //TEST- TODO: DELETE THIS BLOCK AFTER TEST
-            var testCustomer = _customerService.GetCustomerByUsername("paraschivescumaria");
-            var bankAccount = new BankAccount
-            {
-
-            };
-            _customerService.AddBankAccount(bankAccount, new Customer());
-
-
-            //END OF TEST
 
             if (_transactionService.AddTransaction(newTransaction))
                 return httpResponse;

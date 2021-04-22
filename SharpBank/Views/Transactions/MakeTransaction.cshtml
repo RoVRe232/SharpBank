@@ -1,6 +1,7 @@
 ﻿
 @{
     ViewData["Title"] = "Make Transaction";
+    var accounts = ViewBag.BankAccounts;
 }
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
@@ -49,9 +50,10 @@
             </div>
             <select class="custom-select" id="selectSenderIban" name="senderIban">
                 <option selected>Choose...</option>
-                <option value="1234567">IBAN1</option>
-                <option value="2333333">IBAN2</option>
-                <option value="3346363">IBAN3</option>
+                @foreach (var bankAccount in accounts)
+                {
+                    <option value="@bankAccount.IBAN">@bankAccount.IBAN</option>
+                }
             </select>
         </div>
 
@@ -89,9 +91,9 @@
                 <div class="input-group-prepend">
                     <select class="custom-select" id="selectCurrency" name="currency">
                         <option selected>Currency...</option>
-                        <option value="1">RON</option>
-                        <option value="2">EUR</option>
-                        <option value="3">USD</option>
+                        <option value="RON">RON</option>
+                        <option value="EUR">EUR</option>
+                        <option value="USD">USD</option>
                     </select>
                 </div>
 

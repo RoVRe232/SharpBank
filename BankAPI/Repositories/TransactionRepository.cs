@@ -44,6 +44,8 @@ namespace BankAPI.Repositories
         public void AddTransaction(Transaction transaction, BankAccount senderBankAccount)
         {
             senderBankAccount.Transactions.Add(transaction);
+
+            //TODO this does not update the transactions array inside the senderBankAccount
             dbContext.BankAccounts.Update(senderBankAccount);
         }
     }

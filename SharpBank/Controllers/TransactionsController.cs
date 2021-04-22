@@ -11,16 +11,20 @@ namespace SharpBank.Controllers
     public class TransactionsController : Controller
     {
         private LoginService _loginService;
+        private ResolverService _resolverService;
 
-        public TransactionsController(LoginService loginService)
+        public TransactionsController(LoginService loginService, ResolverService resolverService)
         {
             _loginService = loginService;
+            _resolverService = resolverService;
         }
 
         public IActionResult Index()
         {
+            //TODO replace this Authorize with proper Authorize attribute
             if (!_loginService.Authorize(HttpContext))
                 return RedirectToAction(controllerName: "Login", actionName: "Index");
+
             return View();
         }
 
@@ -28,6 +32,13 @@ namespace SharpBank.Controllers
         {
             if (!_loginService.Authorize(HttpContext))
                 return RedirectToAction(controllerName: "Login", actionName: "Index");
+
+            var bankAccounts = _resolverService.GetLoggedInUserAccounts(HttpContext);
+            if (bankAccounts == null)
+                return RedirectToAction(controllerName: "Home", actionName: "Index");
+
+            ViewBag.BankAccounts = bankAccounts;
+
             return View();
         }
 
@@ -38,12 +49,15 @@ namespace SharpBank.Controllers
             if (!_loginService.Authorize(HttpContext))
                 return RedirectToAction(controllerName: "Login", actionName: "Index");
 
-            var response = HttpService.Instance.SendRequestToApiAsync(formData, "/api/transactions/newtransaction");
+            if(formData.Currency == "Currency..." || formData.Amount<=0)
+                return RedirectToAction(actionName: "MakeTransaction", controllerName: "Transactions");
 
-            if (response.IsCompletedSuccessfully)
+            var response = HttpService.Instance.SendRequestToApiAsync(formData, "/api/transactions/newtransaction").Result;
+
+            if (response.IsSuccessStatusCode)
                 return RedirectToAction(actionName: "Index", controllerName: "Home");
 
-            return RedirectToAction(actionName: "Index", controllerName: "TransactionsController");
+            return RedirectToAction(actionName: "Index", controllerName: "Transactions");
         }
 
     }

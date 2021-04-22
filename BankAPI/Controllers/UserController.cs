@@ -137,6 +137,7 @@ namespace BankAPI.Controllers
                 Type = newBankAccountFormModel.AccountType,
                 Balance = 0,
                 Currency = newBankAccountFormModel.Currency,
+                IsBlocked = false
             };
             _customerService.AddBankAccount(newBankAccount, user);
 

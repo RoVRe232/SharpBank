@@ -1,6 +1,7 @@
 ﻿using BankAPI.Entities;
 using BankAPI.Repositories.Interfaces;
 using BankAPI.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,32 +12,44 @@ namespace BankAPI.Services
     public class TransactionService : ITransactionService
     {
         private ITransactionRepository transactionRepository;
+        private IRecurringTransactionRepository recurringTransactionRepository;
         private IBankAccountsRepository bankAccountsRepository;
 
-        public TransactionService(ITransactionRepository transactionRepository, IBankAccountsRepository bankAccountsRepository)
+        public TransactionService(ITransactionRepository transactionRepository, 
+            IBankAccountsRepository bankAccountsRepository, IRecurringTransactionRepository recurringTransactionRepository)
         {
             this.transactionRepository = transactionRepository;
             this.bankAccountsRepository = bankAccountsRepository;
+            this.recurringTransactionRepository = recurringTransactionRepository;
         }
 
         public bool AddTransaction(Transaction transaction)
         {
-            //TODO validate transaction that will be added (return false if not valid(like account ballance too small))
             BankAccount senderAccount = bankAccountsRepository
-                .GetQuery(value => value.IBAN.Equals(transaction.SenderIBAN)).FirstOrDefault();
-            if (senderAccount == null)
+                .GetQuery(value => value.IBAN.Equals(transaction.SenderIBAN))
+                .Include(e => e.Transactions)
+                .FirstOrDefault();
+
+            if (senderAccount == null || senderAccount.Balance - transaction.Amount < 0 || senderAccount.IsBlocked)
                 return false;
 
-            if (senderAccount.Balance - transaction.Amount < 0)
-                return false;
-
-            //TODO add blocking option to account
             transactionRepository.AddTransaction(transaction, senderAccount);
+
             return true;
         }
+
         public bool AddRecurringTransaction(RecurringTransaction recurringTransaction)
         {
-            throw new NotImplementedException();
+            BankAccount senderAccount = bankAccountsRepository
+                .GetQuery(value => value.IBAN.Equals(recurringTransaction.SenderIBAN))
+                .FirstOrDefault();
+
+            if (senderAccount == null || senderAccount.Balance - recurringTransaction.Amount < 0 || senderAccount.IsBlocked)
+                return false;
+
+            //TODO implement recurring transactions
+
+            return true;
         }
 
     }

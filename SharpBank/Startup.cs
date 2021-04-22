@@ -45,6 +45,7 @@ namespace SharpBank
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
 
             services.AddScoped<LoginService>();
+            services.AddScoped<ResolverService>();
 
             services.AddAuthentication(x =>
             {

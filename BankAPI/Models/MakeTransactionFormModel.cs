@@ -12,6 +12,6 @@ namespace BankAPI.Models
         public string ReceiverFullName { get; set; }
         public string Description { get; set; }
         public double Amount { get; set; }
-        public double Currency { get; set; }
+        public string Currency { get; set; }
     }
 }
