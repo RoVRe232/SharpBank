@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -6,25 +7,27 @@ using SharpBank.Models.Login;
 using SharpBank.Services.Interfaces;
 using SharpBank.Utils;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Principal;
 using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
 namespace SharpBank.Services
 {
+    
     public class LoginService : ILoginService
     {
         private readonly AppSettings _appSettings;
-        public LoginService(IOptions<AppSettings> appSettings)
+        private IHttpContextAccessor _httpContextAccessor;
+        public LoginService(IOptions<AppSettings> appSettings, IHttpContextAccessor httpContextAccessor)
         {
             _appSettings = appSettings.Value;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public bool Authorize(HttpContext httpContext)
+        public bool Authorize()
         {
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
             const string sessionKey = "SharpBankSession";
             
             var sessionUserIdentity = httpContext.Session.GetString(sessionKey);
@@ -66,8 +69,10 @@ namespace SharpBank.Services
             return true;
         }
 
-        public void Signout(HttpContext httpContext)
+        public void Signout()
         {
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+
             const string sessionKey = "SharpBankSession";
             httpContext.Session.SetString(sessionKey, "");
         }

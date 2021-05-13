@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharpBank.Models.Transactions;
 using SharpBank.Services;
 
 namespace SharpBank.Controllers
 {
+    [Authorize(Policy = "LoggedIn")]
     public class TransactionsController : Controller
     {
         private LoginService _loginService;
@@ -19,15 +21,12 @@ namespace SharpBank.Controllers
 
         public IActionResult Index()
         {
-            if (!_loginService.Authorize(HttpContext))
-                return RedirectToAction(controllerName: "Login", actionName: "Index");
+
             return View();
         }
 
         public IActionResult MakeTransaction()
         {
-            if (!_loginService.Authorize(HttpContext))
-                return RedirectToAction(controllerName: "Login", actionName: "Index");
             return View();
         }
 
@@ -35,8 +34,6 @@ namespace SharpBank.Controllers
         public IActionResult AddNewTransaction(MakeTransactionFormModel formData)
         {
             //TODO validate formData to have valid characters, for now consider valid
-            if (!_loginService.Authorize(HttpContext))
-                return RedirectToAction(controllerName: "Login", actionName: "Index");
 
             var response = HttpService.Instance.SendRequestToApiAsync(formData, "/api/transactions/newtransaction");
 
@@ -45,6 +42,5 @@ namespace SharpBank.Controllers
 
             return RedirectToAction(actionName: "Index", controllerName: "TransactionsController");
         }
-
     }
 }

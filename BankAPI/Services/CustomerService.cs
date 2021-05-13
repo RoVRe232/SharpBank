@@ -29,15 +29,20 @@ namespace BankAPI.Services
 
         public bool AddCustomer(Customer customer)
         {
-            var queryResult = customerRepository
-                .GetQuery(client => (client.CNP == customer.CNP || client.Username == customer.Username || client.EmailAddress == customer.EmailAddress))
-                .FirstOrDefault();
+            var queryResult = GetCustomerByCNPUsernameOrEmail(customer);
 
             if (queryResult!=null)
                 return false;
 
-            customerRepository.Add(customer);
+            var addedCustomer = customerRepository.Add(customer);
             return true;
+        }
+
+        public Customer GetCustomerByCNPUsernameOrEmail(Customer customer)
+        {
+            return customerRepository
+                .GetQuery(client => (client.CNP == customer.CNP || client.Username == customer.Username || client.EmailAddress == customer.EmailAddress))
+                .FirstOrDefault();
         }
 
         public bool AddBankAccount(BankAccount bankAccount, Customer customer)

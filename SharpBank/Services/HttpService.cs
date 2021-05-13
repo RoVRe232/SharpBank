@@ -38,5 +38,7 @@ namespace SharpBank.Services
 
             return response;
         }
+
+        //TODO add sendRequestWithAuthorizationHeader authorization:bearer [token]
     }
 }
