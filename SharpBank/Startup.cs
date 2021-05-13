@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using SharpBank.Services;
+using SharpBank.Services.Interfaces;
 using SharpBank.Utils;
 using SharpBank.Utils.Auth;
 
@@ -49,6 +50,7 @@ namespace SharpBank
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IUserService, UserService>();
             services.AddSingleton<LoginService>();
 
             services.AddAuthentication(x =>

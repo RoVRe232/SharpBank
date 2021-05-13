@@ -10,7 +10,6 @@ namespace BankAPI.Services.Interfaces
     public interface ICustomerService
     {
         bool AddCustomer(Customer customer);
-        void SendSignupConfirmation(Customer newCustomer, string confirmationKey);
         bool ValidateCustomer(string email, string username, string confirmationKey);
         void EditCustomer();
         void DeleteCustomer();

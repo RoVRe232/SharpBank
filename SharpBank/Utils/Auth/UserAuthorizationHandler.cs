@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using SharpBank.Services;
 using System;
 using System.Collections.Generic;
@@ -22,9 +24,9 @@ namespace SharpBank.Utils.Auth
             var token = context.User.Claims.FirstOrDefault(e => e.Type == "AuthToken");
 
             if (_loginService.Authorize())
-            {
                 context.Succeed(requirement);
-            }
+            else
+                context.Fail();
 
             return Task.FromResult(0);
         }

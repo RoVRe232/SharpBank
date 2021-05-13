@@ -25,16 +25,11 @@ namespace SharpBank.Controllers
             return View();
         }
 
-        public IActionResult SignupFailed()
-        {
-            return View();
-        }
-
         [HttpPost]
         public async Task<IActionResult> SendSignupDataAsync(SignupFormModel signupForm)
         {
             if (!signupForm.Password.Equals(signupForm.ConfirmPassword))
-                return RedirectToAction(actionName: "SignupFailed", controllerName: "Signup");
+                return RedirectToAction(actionName: "Index", controllerName: "Signup");
 
             signupForm.Password = Hasher.ComputeB64HashWithSha256(signupForm.Password);
             signupForm.ConfirmPassword = signupForm.Password;
@@ -45,7 +40,7 @@ namespace SharpBank.Controllers
             if(response.StatusCode.Equals(HttpStatusCode.OK))
                 return RedirectToAction(actionName: "SignupConfirmation", controllerName: "Signup");
 
-            return RedirectToAction(actionName: "SignupFailed", controllerName: "Signup");
+            return RedirectToAction(actionName: "Index", controllerName: "Signup");
         }
 
 

@@ -1,4 +1,5 @@
-﻿using BankAPI.Models;
+﻿using BankAPI.Entities;
+using BankAPI.Models;
 using SharpBank.Models;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BankAPI.Services.Interfaces
 {
-    interface IUserService
+    public interface IUserService
     {
         AuthenticateResponse Authenticate(LoginFormModel model, string ipAddress);
         AuthenticateResponse RefreshToken(string token, string ipAddress);

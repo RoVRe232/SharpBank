@@ -12,6 +12,7 @@ namespace BankAPI.Repositories.Interfaces
         Customer GetCustomerByUserId(int userId);
         void AddCustomer(Customer customer);
         Customer GetCustomerByEmailAndUsername(string username, string email);
+        Customer GetCustomerByUsernameAndPasswordHash(string username, string passwordHash);
         IQueryable<Customer> GetQuery(Expression<Func<Customer, bool>> expression);
     }
 }
