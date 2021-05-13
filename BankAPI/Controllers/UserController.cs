@@ -8,11 +8,11 @@ using BankAPI.Entities;
 using BankAPI.Models;
 using BankAPI.Repositories;
 using BankAPI.Services;
+using BankAPI.Services.Interfaces;
 using BankAPI.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using SharpBank.Models;
 
 namespace BankAPI.Controllers
@@ -24,16 +24,18 @@ namespace BankAPI.Controllers
         private readonly ILogger<UserController> _logger;
         private readonly BankContext _bankContext;
 
-        private readonly CustomerService _customerService;
-        private readonly UserService _userService;
+        private readonly ICustomerService _customerService;
+        private readonly IUserService _userService;
+        private readonly ISignupService _signupService;
 
         public UserController(ILogger<UserController> logger, BankContext bankContext, 
-            CustomerService customerService, UserService userService)
+            ICustomerService customerService, IUserService userService, ISignupService signupService)
         {
             _logger = logger;
             _bankContext = bankContext;
             _customerService = customerService;
             _userService = userService;
+            _signupService = signupService;
         }
 
         [HttpPost]
@@ -41,32 +43,12 @@ namespace BankAPI.Controllers
         public async Task<HttpResponseMessage> SignupRequest(SignupFormModel signupFormData)
         {
 
-            string confirmationKey = _customerService.GenerateSignupConfirmationKey();
-
-            Customer newCustomer = new Customer
-            {
-                FirstName = signupFormData.FirstName,
-                LastName = signupFormData.LastName,
-                Username = signupFormData.Username,
-                PasswordToken = signupFormData.Password,
-                PhoneNumber = "NA",
-                EmailAddress = signupFormData.Email,
-                CI = signupFormData.Ci,
-                CNP = signupFormData.Cnp,
-                ConfirmationKey = confirmationKey,
-                IsConfirmed = false
-            };
-
-            if (_customerService.AddCustomer(newCustomer))
-            {
-                _customerService.SendSignupConfirmation(newCustomer, confirmationKey);
-
+            if (_signupService.SignupCustomer(signupFormData))
                 return new HttpResponseMessage
                 {
                     StatusCode = System.Net.HttpStatusCode.OK,
                     Content = new StringContent("Query successful : user added to database!")
-                }; ;
-            }
+                };
 
             return new HttpResponseMessage
             {
@@ -79,24 +61,7 @@ namespace BankAPI.Controllers
         [Route("validateconfirmation")]
         public HttpResponseMessage ValidateConfirmation([FromQuery(Name = "confirmationToken")]string confirmationToken)
         {
-            string key = "bce2ea2315a1916b14ca5898a4e4133b";
-            confirmationToken = confirmationToken.Replace(' ', '+');
-            string decryptedConfirmationToken = Codec.DecryptString(key, confirmationToken);
-
-            string[] tokenData = decryptedConfirmationToken.Split(new string[] { Constants.kDelimiterToken }, StringSplitOptions.None);
-
-            if (tokenData.Length < 3)
-                return new HttpResponseMessage
-                {
-                    StatusCode = System.Net.HttpStatusCode.BadRequest,
-                    Content = new StringContent("Query unsuccessful : Bad token")
-                }; 
-
-            string username = tokenData[0];
-            string email = tokenData[1];
-            string confirmationKey = tokenData[2];
-
-            if (_customerService.ValidateCustomer(email, username, confirmationKey))
+            if(_signupService.ParseAndValidateCustomerConfirmationToken(confirmationToken))
                 return new HttpResponseMessage
                 {
                     StatusCode = System.Net.HttpStatusCode.OK,
@@ -108,6 +73,7 @@ namespace BankAPI.Controllers
                 StatusCode = System.Net.HttpStatusCode.BadRequest,
                 Content = new StringContent("Query unsuccessful : user NOT validated!")
             };
+
         }
 
         [HttpPost]
@@ -121,39 +87,6 @@ namespace BankAPI.Controllers
             SetTokenCookie(response.RefreshToken);
 
             return Ok(response);
-        }
-
-        [HttpPost]
-        [Route("newbankaccount")]
-        public IActionResult CreateBankAccountRequest(NewBankAccountFormModel newBankAccountFormModel)
-        {
-            var user = _customerService.GetCustomerByUsername(newBankAccountFormModel.Username);
-            if (user == null)
-                return BadRequest(new { message = "Invalid request" });
-
-            BankAccount newBankAccount = new BankAccount
-            {
-                IBAN = Guid.NewGuid().ToString(),
-                Type = newBankAccountFormModel.AccountType,
-                Balance = 0,
-                Currency = newBankAccountFormModel.Currency,
-                IsBlocked = false
-            };
-            _customerService.AddBankAccount(newBankAccount, user);
-
-            return Ok(new { message = "Request completed" });
-        }
-
-        [HttpPost]
-        [Route("accounts")]
-        public IActionResult GetBankAccounts([FromBody]string username)
-        {
-            var user = _customerService.GetCustomerByUsername(username);
-            if (user == null)
-                return BadRequest(new { message = "Invalid request" });
-
-            string serializedBankAccounts = JsonConvert.SerializeObject(user.BankAccounts);
-            return Ok(serializedBankAccounts);
         }
 
         private void SetTokenCookie(string token)

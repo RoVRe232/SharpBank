@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace SharpBank.Services.Interfaces
 {
-    public interface ILoginService
+    public interface IUserService
     {
-        bool Authorize();
-        void Signout();
+        string GetUserToken();
     }
 }

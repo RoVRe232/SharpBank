@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -6,42 +7,37 @@ using SharpBank.Models.Login;
 using SharpBank.Services.Interfaces;
 using SharpBank.Utils;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Principal;
 using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
 namespace SharpBank.Services
 {
+    
     public class LoginService : ILoginService
     {
         private readonly AppSettings _appSettings;
-        public LoginService(IOptions<AppSettings> appSettings)
+        private IHttpContextAccessor _httpContextAccessor;
+        private IUserService _userService;
+        public LoginService(IOptions<AppSettings> appSettings, IHttpContextAccessor httpContextAccessor, IUserService userService)
         {
             _appSettings = appSettings.Value;
+            _httpContextAccessor = httpContextAccessor;
+            _userService = userService;
         }
 
-        public bool Authorize(HttpContext httpContext)
+        public bool Authorize()
         {
-            const string sessionKey = "SharpBankSession";
-            
-            var sessionUserIdentity = httpContext.Session.GetString(sessionKey);
-
-            if (string.IsNullOrEmpty(sessionUserIdentity))
-                return false;
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-
             try
             {
-                var userIdentity = JsonConvert.DeserializeObject<IdentityModel>(sessionUserIdentity);
-                var token = userIdentity.JwtToken;
+                var token = _userService.GetUserToken();
 
                 if (string.IsNullOrEmpty(token))
                     return false;
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(GetAppSecret());
 
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
@@ -66,8 +62,10 @@ namespace SharpBank.Services
             return true;
         }
 
-        public void Signout(HttpContext httpContext)
+        public void Signout()
         {
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+
             const string sessionKey = "SharpBankSession";
             httpContext.Session.SetString(sessionKey, "");
         }
@@ -89,6 +87,13 @@ namespace SharpBank.Services
             return userIdentity.Username;
         }
 
+        private string GetAppSecret()
+        {
+            if (_appSettings == null)
+                return "asdadqweSADASDad312312312312D3141SAd399DFFgeqwasdasdeSDDS1235566";
+            return _appSettings.Secret;
+        }
+
         private bool ValidateToken(string authToken)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -106,8 +111,9 @@ namespace SharpBank.Services
                 ValidateLifetime = false,
                 ValidateAudience = false,
                 ValidateIssuer = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret)) // The same key as the one that generate the token
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GetAppSecret())) // The same key as the one that generate the token
             };
         }
+
     }
 }

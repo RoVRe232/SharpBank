@@ -4,15 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using SharpBank.Services;
+using SharpBank.Services.Interfaces;
 using SharpBank.Utils;
+using SharpBank.Utils.Auth;
 
 namespace SharpBank
 {
@@ -33,6 +37,7 @@ namespace SharpBank
             services.AddDistributedMemoryCache();
             services.AddSession();
 
+
             services.AddCors();
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
 
@@ -44,8 +49,9 @@ namespace SharpBank
             var appSettings = appSettingsSection.Get<AppSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
 
-            services.AddScoped<LoginService>();
-            services.AddScoped<ResolverService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddSingleton<LoginService>();
 
             services.AddAuthentication(x =>
             {
@@ -66,6 +72,12 @@ namespace SharpBank
                     ClockSkew = TimeSpan.Zero
                 };
             });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("LoggedIn", policy => policy.Requirements.Add(new UserLoggedInRequirement()));
+            });
+            services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -95,7 +107,7 @@ namespace SharpBank
                 .AllowCredentials());
 
             app.UseAuthentication();
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

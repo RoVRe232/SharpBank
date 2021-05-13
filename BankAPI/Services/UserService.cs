@@ -31,8 +31,7 @@ namespace BankAPI.Services
         public AuthenticateResponse Authenticate(LoginFormModel loginForm, string ipAddress)
         {
             var user = _customerRepository
-                .GetQuery(exp => exp.Username.Equals(loginForm.Username) && exp.PasswordToken.Equals(loginForm.Password))
-                .FirstOrDefault();
+                .GetCustomerByUsernameAndPasswordHash(loginForm.Username, loginForm.Password);
             if (user == null)
                 return null;
 
@@ -50,7 +49,7 @@ namespace BankAPI.Services
         private string GenerateJwtToken(LoginFormModel user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(GetAppSecret());
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
@@ -62,6 +61,13 @@ namespace BankAPI.Services
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        private string GetAppSecret()
+        {
+            if (_appSettings == null)
+                return "asdadqweSADASDad312312312312D3141SAd399DFFgeqwasdasdeSDDS1235566";
+            return _appSettings.Secret;
         }
 
         private RefreshToken GenerateRefreshToken(string ipAddress)

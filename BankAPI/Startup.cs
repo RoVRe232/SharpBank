@@ -46,9 +46,10 @@ namespace BankAPI
             services.AddTransient<IRecurringTransactionRepository, RecurringTransactionRepository>();
             services.AddTransient<IBankAccountsRepository, BankAccountsRepository>();
 
-            services.AddScoped<CustomerService>();
-            services.AddScoped<TransactionService>();
-            services.AddScoped<UserService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISignupService, SignupService>();
 
             services.AddCors();
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);

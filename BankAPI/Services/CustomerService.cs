@@ -29,15 +29,20 @@ namespace BankAPI.Services
 
         public bool AddCustomer(Customer customer)
         {
-            var queryResult = customerRepository
-                .GetQuery(client => (client.CNP == customer.CNP || client.Username == customer.Username || client.EmailAddress == customer.EmailAddress))
-                .FirstOrDefault();
+            var queryResult = GetCustomerByCNPUsernameOrEmail(customer);
 
             if (queryResult!=null)
                 return false;
 
-            customerRepository.Add(customer);
+            var addedCustomer = customerRepository.Add(customer);
             return true;
+        }
+
+        public Customer GetCustomerByCNPUsernameOrEmail(Customer customer)
+        {
+            return customerRepository
+                .GetQuery(client => (client.CNP == customer.CNP || client.Username == customer.Username || client.EmailAddress == customer.EmailAddress))
+                .FirstOrDefault();
         }
 
         public bool AddBankAccount(BankAccount bankAccount, Customer customer)
@@ -64,31 +69,6 @@ namespace BankAPI.Services
             return customerRepository
                 .GetQuery(e => e.Username.Equals(username))
                 .FirstOrDefault();
-        }
-
-        public void SendSignupConfirmation(Customer newCustomer, string confirmationKey)
-        {
-            string confirmationToken = $"{newCustomer.Username}{Constants.kDelimiterToken}" +
-                $"{newCustomer.EmailAddress}{Constants.kDelimiterToken}{confirmationKey}";
-
-            var encryptionKey = "bce2ea2315a1916b14ca5898a4e4133b";
-            string encryptedConfirmationToken = Codec.EncryptString(encryptionKey, confirmationToken);
-
-            string confirmationLink = $"{Constants.kBankApiDomain}/api/user/validateconfirmation?confirmationtoken={encryptedConfirmationToken}";
-
-            EmailSender.SendSignupConfirmationEmail(newCustomer.EmailAddress, confirmationLink);
-        }
-
-        public string GenerateSignupConfirmationKey()
-        {
-            var chars = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-            var rand = new Random();
-
-            String confirmationKey = new String("");
-            for (int i = 0; i < 64; i++)
-                confirmationKey+=chars[rand.Next(0, chars.Length)];
-
-            return confirmationKey;
         }
 
         public bool ValidateCustomer(string email, string username, string confirmationKey)

@@ -39,5 +39,12 @@ namespace BankAPI.Repositories
         {
             dbContext.Customers.Add(customer);
         }
+
+        public Customer GetCustomerByUsernameAndPasswordHash(string username, string passwordHash)
+        {
+            return dbContext.Customers
+                .Where(client => client.Username == username && client.PasswordToken == passwordHash)
+                .FirstOrDefault();
+        }
     }
 }

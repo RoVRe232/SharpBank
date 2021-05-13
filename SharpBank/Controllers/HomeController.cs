@@ -11,6 +11,7 @@ using SharpBank.Services;
 
 namespace SharpBank.Controllers
 {
+    [Authorize(Policy = "LoggedIn")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -24,8 +25,6 @@ namespace SharpBank.Controllers
 
         public IActionResult Index()
         {
-            if (!_loginService.Authorize(HttpContext))
-                return RedirectToAction(controllerName: "Login", actionName: "Index");
             return View();
         }
 
@@ -36,7 +35,7 @@ namespace SharpBank.Controllers
 
         public IActionResult Signout()
         {
-            _loginService.Signout(HttpContext);
+            _loginService.Signout();
             return RedirectToAction(controllerName: "Login", actionName: "Index");
         }
 
