@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SharpBank.Models;
+using SharpBank.Models.Accounts;
 using SharpBank.Services;
+using SharpBank.Services.Interfaces;
 
 namespace SharpBank.Controllers
 {
@@ -16,15 +18,20 @@ namespace SharpBank.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private LoginService _loginService;
+        private IResolverService _resolverService;
 
-        public HomeController(ILogger<HomeController> logger, LoginService loginService)
+        public HomeController(ILogger<HomeController> logger, LoginService loginService, IResolverService resolverService)
         {
             _logger = logger;
             _loginService = loginService;
+            _resolverService = resolverService;
         }
 
         public IActionResult Index()
         {
+            IEnumerable<BankAccountModel> bankAccountsArray = _resolverService.GetLoggedInUserAccounts(HttpContext);
+
+            ViewBag.BankAccounts = bankAccountsArray;
             return View();
         }
 

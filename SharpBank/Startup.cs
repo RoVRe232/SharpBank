@@ -52,6 +52,7 @@ namespace SharpBank
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUserService, UserService>();
             services.AddSingleton<LoginService>();
+            services.AddScoped<IResolverService, ResolverService>();
 
             services.AddAuthentication(x =>
             {

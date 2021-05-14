@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using SharpBank.Models.Accounts;
+using SharpBank.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SharpBank.Services
 {
-    public class ResolverService
+    public class ResolverService : IResolverService
     {
         LoginService _loginService;
         public ResolverService(LoginService loginService)
