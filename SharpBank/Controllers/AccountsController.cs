@@ -51,6 +51,27 @@ namespace SharpBank.Controllers
             return View();
         }
 
+        public IActionResult TransferBetweenAccounts()
+        {
+            // get logged in user's username
+            var username = _loginService.GetLoggedInUsername(HttpContext);
+            if (username == null)
+                return RedirectToAction(controllerName: "Login", actionName: "Index");
+
+            var response = HttpService.Instance.SendRequestToApiAsync(username, "/api/user/accounts").Result;
+            if (!response.IsSuccessStatusCode)
+                return RedirectToAction(controllerName: "Home", actionName: "Index");
+
+            var bankAccounts = response.Content.ReadAsStringAsync().Result;
+            if (string.IsNullOrEmpty(bankAccounts))
+                return RedirectToAction(controllerName: "Home", actionName: "Index");
+            ICollection<BankAccountModel> bankAccountsArray =
+                ((Newtonsoft.Json.Linq.JArray)JsonConvert.DeserializeObject(bankAccounts)).ToObject<List<BankAccountModel>>();
+
+            ViewBag.BankAccounts = bankAccountsArray;
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateAccount(BankAccountFormModel bankAccountForm)
         {

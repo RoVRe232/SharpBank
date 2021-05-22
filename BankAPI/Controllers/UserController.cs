@@ -28,15 +28,18 @@ namespace BankAPI.Controllers
         private readonly ICustomerService _customerService;
         private readonly IUserService _userService;
         private readonly ISignupService _signupService;
+        private readonly ITransactionService _transactionService;
 
         public UserController(ILogger<UserController> logger, BankContext bankContext, 
-            ICustomerService customerService, IUserService userService, ISignupService signupService)
+            ICustomerService customerService, IUserService userService, ISignupService signupService, 
+            ITransactionService transactionService)
         {
             _logger = logger;
             _bankContext = bankContext;
             _customerService = customerService;
             _userService = userService;
             _signupService = signupService;
+            _transactionService = transactionService;
         }
 
         [HttpPost]
@@ -101,7 +104,7 @@ namespace BankAPI.Controllers
             BankAccount newBankAccount = new BankAccount
             {
                 IBAN = Guid.NewGuid().ToString(),
-                Type = newBankAccountFormModel.AccountType,
+                Type = newBankAccountFormModel.Type,
                 Balance = 0,
                 Currency = newBankAccountFormModel.Currency,
             };
@@ -120,6 +123,20 @@ namespace BankAPI.Controllers
 
             string serializedBankAccounts = JsonConvert.SerializeObject(user.BankAccounts);
             return Ok(serializedBankAccounts);
+        }
+
+        [HttpPost]
+        [Route("transactions")]
+        public IActionResult GetUserTransactions([FromBody] string username)
+        {
+            var user = _customerService.GetCustomerByUsername(username);
+            if (user == null)
+                return BadRequest(new { message = "Invalid request" });
+
+            var transactions = _transactionService.GetAllTransactionsForUser(user);
+
+            string serializedTransactions = JsonConvert.SerializeObject(transactions);
+            return Ok(serializedTransactions);
         }
 
         private void SetTokenCookie(string token)

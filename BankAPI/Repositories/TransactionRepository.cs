@@ -41,12 +41,26 @@ namespace BankAPI.Repositories
             return transactions;
         }
 
-        public void AddTransaction(Transaction transaction, BankAccount senderBankAccount)
+        public void AddTransaction(Transaction transaction, BankAccount senderBankAccount, 
+            BankAccount receiverBankAccount = null)
         {
-            senderBankAccount.Transactions.Add(transaction);
+            if (senderBankAccount.Transactions == null)
+                senderBankAccount.Transactions = new List<Transaction>();
 
-            //TODO this does not update the transactions array inside the senderBankAccount
+            senderBankAccount.Transactions.Add(transaction);
+            senderBankAccount.Balance -= transaction.Amount;
+
+            if (receiverBankAccount != null)
+            {
+                if (receiverBankAccount.Transactions == null)
+                    receiverBankAccount.Transactions = new List<Transaction>();
+
+                receiverBankAccount.Transactions.Add(transaction);
+                receiverBankAccount.Balance += transaction.Amount;
+            }
+
             dbContext.BankAccounts.Update(senderBankAccount);
+            dbContext.SaveChanges();
         }
     }
 }

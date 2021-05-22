@@ -27,13 +27,24 @@ namespace BankAPI.Services
         {
             BankAccount senderAccount = bankAccountsRepository
                 .GetQuery(value => value.IBAN.Equals(transaction.SenderIBAN))
+                .Include(e=>e.Transactions)
+                .FirstOrDefault();
+
+            BankAccount receiverAccount = bankAccountsRepository
+                .GetQuery(value => value.IBAN.Equals(transaction.ReceiverIBAN))
                 .Include(e => e.Transactions)
                 .FirstOrDefault();
 
             if (senderAccount == null || senderAccount.Balance - transaction.Amount < 0 || senderAccount.IsBlocked)
                 return false;
 
-            transactionRepository.AddTransaction(transaction, senderAccount);
+            if (receiverAccount != null)
+            {
+                if (receiverAccount.IsBlocked)
+                    return false;
+            }
+
+            transactionRepository.AddTransaction(transaction, senderAccount, receiverAccount);
 
             return true;
         }
@@ -52,5 +63,21 @@ namespace BankAPI.Services
             return true;
         }
 
+        public IEnumerable<Transaction> GetAllTransactionsForUser(Customer customer)
+        {
+            var transactionsBuffer = new List<Transaction>(); 
+            foreach (var bankAccount in customer.BankAccounts)
+            {
+                BankAccount userAccount = bankAccountsRepository
+                    .GetQuery(value => value.IBAN == bankAccount.IBAN)
+                    .Include(e => e.Transactions)
+                    .FirstOrDefault();
+
+                foreach (var transaction in userAccount.Transactions)
+                    transactionsBuffer.Add(transaction);
+            }
+
+            return transactionsBuffer;
+        }
     }
 }

@@ -21,7 +21,7 @@
 
 <hr />
 
-@if(!String.IsNullOrEmpty(errorMessage))
+@if (!String.IsNullOrEmpty(errorMessage))
 {
     <div class="alert alert-danger" role="alert">
         @errorMessage
@@ -31,7 +31,7 @@
     <br />
     <h3 class="text-center" style="padding:30px;">Please enter the transaction details below</h3>
     <br />
-    <form method="post" enctype="multipart/form-data" asp-controller="Transactions" asp-action="AddNewTransaction" class="col-sm-6">
+    <form method="post" enctype="multipart/form-data" asp-controller="Transactions" asp-action="TransactionBetweenAccounts" class="col-sm-6">
         <div class="input-group-prepend">
             <div class="input-group-prepend">
                 <label class="input-group-text" for="selectSenderIban">Sender Account</label>
@@ -46,27 +46,17 @@
         </div>
 
         <label for="receiver-id">Receiver</label>
-        <div class="input-group mb-3">
+        <div class="input-group-prepend">
             <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon3">IBAN</span>
+                <label class="input-group-text" for="selectSenderIban">Sender Account</label>
             </div>
-            <input type="text" name="receiverIban" class="form-control" id="receiver-id" aria-describedby="basic-addon3" required>
-        </div>
-
-        <label for="receiver-name">Receiver's full name (E.g. Johnatan Andrew-Smith)</label>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon3">Full name</span>
-            </div>
-            <input type="text" name="receiverFullName" class="form-control" id="receiver-full-name" aria-describedby="basic-addon3" required>
-        </div>
-
-        <label for="transaction-description">Transaction description</label>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">Description</span>
-            </div>
-            <textarea class="form-control" name="description" aria-label="Description" id="transaction-description" required></textarea>
+            <select class="custom-select" id="selectSenderIban" name="receiverIban" required>
+                <option value="" selected disabled>Choose...</option>
+                @foreach (var bankAccount in accounts)
+                {
+                    <option value="@bankAccount.IBAN">@bankAccount.IBAN</option>
+                }
+            </select>
         </div>
 
         <label for="transaction-amount">Transaction amount</label>

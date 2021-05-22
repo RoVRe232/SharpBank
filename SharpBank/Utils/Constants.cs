@@ -8,6 +8,6 @@ namespace SharpBank.Utils
     public static class Constants
     {
         public const int kSaltSize = 100;
-        public const string kBankApiDomain = "https://localhost:5005";
+        public const string kBankApiDomain = "https://localhost:44352";
     }
 }

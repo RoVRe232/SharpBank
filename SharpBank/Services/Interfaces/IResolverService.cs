@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SharpBank.Models.Accounts;
+using SharpBank.Models.Transactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,6 @@ namespace SharpBank.Services.Interfaces
     public interface IResolverService
     {
         IEnumerable<BankAccountModel> GetLoggedInUserAccounts(HttpContext httpContext);
+        IEnumerable<T> GetLoggedInUserData<T>(HttpContext httpContext, String endpoint);
     }
 }

@@ -28,28 +28,20 @@
             <div class="input-group-prepend">
                 <label class="input-group-text" for="selectSenderIban">Choose plan</label>
             </div>
-            <select class="custom-select" id="selectSenderIban" name="accountPlan">
-                <option selected>Choose your account plan...</option>
+            <select class="custom-select" id="selectSenderIban" name="type" required>
+                <option selected disabled value="">Choose your account plan...</option>
                 <option value="1">Casual</option>
                 <option value="2">Bussiness</option>
                 <option value="3">Platinum</option>
             </select>
         </div>
 
-        @*<label for="account-iban">Account IBAN</label>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon3">IBAN</span>
-            </div>
-            <input type="text" name="accountIban" class="form-control" id="account-iban" aria-describedby="basic-addon3">
-        </div>*@
-
         <label for="transaction-amount">Currency</label>
         <div class="row">
             <div class="input-group col-sm-8">
                 <div class="input-group-prepend">
-                    <select class="custom-select" id="selectCurrency" name="currency">
-                        <option selected>Currency...</option>
+                    <select class="custom-select" id="selectCurrency" name="currency" required>
+                        <option value="" selected disabled>Currency...</option>
                         <option value="RON">RON</option>
                         <option value="EUR">EUR</option>
                         <option value="USD">USD</option>

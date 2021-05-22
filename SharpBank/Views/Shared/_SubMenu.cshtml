@@ -2,18 +2,18 @@
     <nav class="navbar navbar-expand-sm bg-light justify-content-center col-sm-12">
         <ul class="navbar-nav">
             <li class="nav-item center-nav-item text-center">
-                <a class="card-link text-dark" href="#">
+                <a class="card-link text-dark" asp-controller="Transactions" asp-action="MakeTransaction">
                     <i class="far fa-money-bill-alt nav-menu-icon"></i><p>Make Transaction</p>
                 </a>
             </li>
             <li class="nav-item center-nav-item text-center">
-                <a class="card-link text-dark" href="#"><i class="fas fa-receipt nav-menu-icon"></i><p>Pay bill</p></a>
+                <a class="card-link text-dark" asp-controller="Transactions" asp-action="RecurringTransactions"><i class="fas fa-receipt nav-menu-icon"></i><p>Pay bill</p></a>
             </li>
             <li class="nav-item center-nav-item text-center">
-                <a class="card-link text-dark" href="#"><i class="far fa-credit-card nav-menu-icon"></i><p>Cards</p></a>
+                <a class="card-link text-dark" asp-controller="Cards" asp-action="Index"><i class="far fa-credit-card nav-menu-icon"></i><p>Cards</p></a>
             </li>
             <li class="nav-item center-nav-item text-center">
-                <a class="card-link text-dark" href="#"><i class="far fa-question-circle text-center nav-menu-icon"></i><p>Help</p></a>
+                <a class="card-link text-dark" asp-controller="Home" asp-action="Help"><i class="far fa-question-circle text-center nav-menu-icon"></i><p>Help</p></a>
             </li>
         </ul>
     </nav>

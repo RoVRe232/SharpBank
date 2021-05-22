@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BankAPI.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -80,6 +80,32 @@ namespace BankAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Admins_RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(nullable: true),
+                    Expires = table.Column<DateTime>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    CreatedByIp = table.Column<string>(nullable: true),
+                    Revoked = table.Column<DateTime>(nullable: true),
+                    RevokedByIp = table.Column<string>(nullable: true),
+                    ReplacedByToken = table.Column<string>(nullable: true),
+                    AdminId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Admins_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Admins_RefreshTokens_Admins_AdminId",
+                        column: x => x.AdminId,
+                        principalTable: "Admins",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BankAccounts",
                 columns: table => new
                 {
@@ -87,6 +113,7 @@ namespace BankAPI.Migrations
                     Type = table.Column<string>(maxLength: 256, nullable: true),
                     Balance = table.Column<double>(nullable: false),
                     Currency = table.Column<string>(maxLength: 64, nullable: true),
+                    IsBlocked = table.Column<bool>(nullable: false),
                     CustomerId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -98,6 +125,32 @@ namespace BankAPI.Migrations
                         principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Customers_RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(nullable: true),
+                    Expires = table.Column<DateTime>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    CreatedByIp = table.Column<string>(nullable: true),
+                    Revoked = table.Column<DateTime>(nullable: true),
+                    RevokedByIp = table.Column<string>(nullable: true),
+                    ReplacedByToken = table.Column<string>(nullable: true),
+                    CustomerId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customers_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Customers_RefreshTokens_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,6 +176,34 @@ namespace BankAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RecurringTransactions",
+                columns: table => new
+                {
+                    TransactionId = table.Column<string>(maxLength: 256, nullable: false),
+                    SenderIBAN = table.Column<string>(maxLength: 256, nullable: false),
+                    ReceiverIBAN = table.Column<string>(maxLength: 256, nullable: false),
+                    ReceiverFullName = table.Column<string>(maxLength: 256, nullable: false),
+                    Description = table.Column<string>(maxLength: 256, nullable: false),
+                    Amount = table.Column<double>(nullable: false),
+                    Currency = table.Column<string>(maxLength: 64, nullable: false),
+                    FirstPaymentDate = table.Column<DateTime>(nullable: false),
+                    LastPaymentDate = table.Column<DateTime>(nullable: false),
+                    DaysInterval = table.Column<int>(nullable: false),
+                    IsMonthly = table.Column<bool>(nullable: false),
+                    BankAccountIBAN = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecurringTransactions", x => x.TransactionId);
+                    table.ForeignKey(
+                        name: "FK_RecurringTransactions_BankAccounts_BankAccountIBAN",
+                        column: x => x.BankAccountIBAN,
+                        principalTable: "BankAccounts",
+                        principalColumn: "IBAN",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Transactions",
                 columns: table => new
                 {
@@ -133,12 +214,6 @@ namespace BankAPI.Migrations
                     Description = table.Column<string>(maxLength: 256, nullable: false),
                     Amount = table.Column<double>(nullable: false),
                     Currency = table.Column<string>(maxLength: 64, nullable: false),
-                    BankAccountIBAN1 = table.Column<string>(nullable: true),
-                    Discriminator = table.Column<string>(nullable: false),
-                    FirstPaymentDate = table.Column<DateTime>(nullable: true),
-                    LastPaymentDate = table.Column<DateTime>(nullable: true),
-                    DaysInterval = table.Column<int>(nullable: true),
-                    IsMonthly = table.Column<bool>(nullable: true),
                     BankAccountIBAN = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -150,13 +225,12 @@ namespace BankAPI.Migrations
                         principalTable: "BankAccounts",
                         principalColumn: "IBAN",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Transactions_BankAccounts_BankAccountIBAN1",
-                        column: x => x.BankAccountIBAN1,
-                        principalTable: "BankAccounts",
-                        principalColumn: "IBAN",
-                        onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Admins_RefreshTokens_AdminId",
+                table: "Admins_RefreshTokens",
+                column: "AdminId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BankAccounts_CustomerId",
@@ -174,26 +248,40 @@ namespace BankAPI.Migrations
                 column: "HomeAddressId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transactions_BankAccountIBAN",
-                table: "Transactions",
+                name: "IX_Customers_RefreshTokens_CustomerId",
+                table: "Customers_RefreshTokens",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RecurringTransactions_BankAccountIBAN",
+                table: "RecurringTransactions",
                 column: "BankAccountIBAN");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transactions_BankAccountIBAN1",
+                name: "IX_Transactions_BankAccountIBAN",
                 table: "Transactions",
-                column: "BankAccountIBAN1");
+                column: "BankAccountIBAN");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Admins");
+                name: "Admins_RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "Cards");
 
             migrationBuilder.DropTable(
+                name: "Customers_RefreshTokens");
+
+            migrationBuilder.DropTable(
+                name: "RecurringTransactions");
+
+            migrationBuilder.DropTable(
                 name: "Transactions");
+
+            migrationBuilder.DropTable(
+                name: "Admins");
 
             migrationBuilder.DropTable(
                 name: "BankAccounts");

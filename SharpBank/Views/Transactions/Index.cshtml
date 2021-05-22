@@ -1,6 +1,8 @@
 ﻿
 @{
     ViewData["Title"] = "Transactions overview";
+    var transactionIndex = 0;
+    var transactions = ViewBag.AllTransactions;
 }
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
@@ -27,103 +29,25 @@
                 <th>No</th>
                 <th>Sender IBAN</th>
                 <th>Receiver IBAN</th>
-                <th>Card id</th>
-                <th>Date/hour</th>
+                <th>Receiver Full Name</th>
+                <th>Transaction id</th>
+                <th>Description</th>
                 <th>Amount</th>
-                <th>Remaining Balance</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th>1</th>
-                <th>RO008383842139923</th>
-                <th>RO008312343239923</th>
-                <th>Visa, 0234 1544 **** ****</th>
-                <th>Fri 26th Feb 2021</th>
-                <th>345 RON</th>
-                <th>8933 RON</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th>2</th>
-                <th>RO008383842139923</th>
-                <th>RO008312343239923</th>
-                <th>Visa, 0234 1544 **** ****</th>
-                <th>Tue 17th Feb 2021</th>
-                <th>600 RON</th>
-                <th>9533 RON</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th>3</th>
-                <th>RO008383842139923</th>
-                <th>RO008312343239923</th>
-                <th>Visa, 0234 1544 **** ****</th>
-                <th>Tue 10th Feb 2021</th>
-                <th>600 RON</th>
-                <th>9533 RON</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th>1</th>
-                <th>RO008383842139923</th>
-                <th>RO008312343239923</th>
-                <th>Visa, 0234 1544 **** ****</th>
-                <th>Fri 26th Feb 2021</th>
-                <th>345 RON</th>
-                <th>8933 RON</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th>2</th>
-                <th>RO008383842139923</th>
-                <th>RO008312343239923</th>
-                <th>Visa, 0234 1544 **** ****</th>
-                <th>Tue 17th Feb 2021</th>
-                <th>600 RON</th>
-                <th>9533 RON</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th>3</th>
-                <th>RO008383842139923</th>
-                <th>RO008312343239923</th>
-                <th>Visa, 0234 1544 **** ****</th>
-                <th>Tue 10th Feb 2021</th>
-                <th>600 RON</th>
-                <th>9533 RON</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th>1</th>
-                <th>RO008383842139923</th>
-                <th>RO008312343239923</th>
-                <th>Visa, 0234 1544 **** ****</th>
-                <th>Fri 26th Feb 2021</th>
-                <th>345 RON</th>
-                <th>8933 RON</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th>2</th>
-                <th>RO008383842139923</th>
-                <th>RO008312343239923</th>
-                <th>Visa, 0234 1544 **** ****</th>
-                <th>Tue 17th Feb 2021</th>
-                <th>600 RON</th>
-                <th>9533 RON</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th>3</th>
-                <th>RO008383842139923</th>
-                <th>RO008312343239923</th>
-                <th>Visa, 0234 1544 **** ****</th>
-                <th>Tue 10th Feb 2021</th>
-                <th>600 RON</th>
-                <th>9533 RON</th>
-                <th></th>
-            </tr>
+            @foreach (var item in transactions)
+            {
+                <tr>
+                    <th>@transactionIndex @{transactionIndex++;}</th>
+                    <th>@item.SenderIBAN</th>
+                    <th>@item.ReceiverIBAN</th>
+                    <th>@item.ReceiverFullName</th>
+                    <th>@item.TransactionId</th>
+                    <th>@item.Description</th>
+                    <th>@item.Amount @item.Currency</th>
+                </tr>
+            }
         </tbody>
     </table>
 </div>

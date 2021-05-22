@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace BankAPI.Services.Interfaces
 {
-    interface ITransactionService
+    public interface ITransactionService
     {
         bool AddTransaction(Transaction transaction);
         bool AddRecurringTransaction(RecurringTransaction recurringTransaction);
+        IEnumerable<Transaction> GetAllTransactionsForUser(Customer customer);
     }
 }

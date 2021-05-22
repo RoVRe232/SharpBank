@@ -35,5 +35,9 @@
     <Folder Include="Entities\Interfaces\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SharpBank\SharpBank.csproj" />
+  </ItemGroup>
+
 
 </Project>

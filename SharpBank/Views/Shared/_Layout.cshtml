@@ -23,7 +23,7 @@
                     <div class="dropdown-menu">
                         <a class="dropdown-item" asp-controller="Accounts" asp-action="Index">Overview</a>
                         <a class="dropdown-item" asp-controller="Accounts" asp-action="AddAccount">Add Account</a>
-                        <a class="dropdown-item" href="#">New transfer</a>
+                        <a class="dropdown-item" asp-controller="Accounts" asp-action="TransferBetweenAccounts">Transfer between accounts</a>
                     </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -60,7 +60,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - SharpBank - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2021 - SharpBank - <a asp-area="" asp-controller="Home" asp-action="Help">Help</a>
         </div>
     </footer>
 

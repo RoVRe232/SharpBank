@@ -7,7 +7,7 @@ namespace BankAPI.Models
 {
     public class NewBankAccountFormModel
     {
-        public string AccountType { get; set; }
+        public string Type { get; set; }
         public string Currency { get; set; }
         public string Username { get; set; }
     }

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAPI.Migrations
 {
     [DbContext(typeof(BankContext))]
-    [Migration("20210422185659_AccountBlockingOption")]
-    partial class AccountBlockingOption
+    [Migration("20210522092301_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -252,7 +252,7 @@ namespace BankAPI.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("BankAPI.Entities.Transaction", b =>
+            modelBuilder.Entity("BankAPI.Entities.RecurringTransaction", b =>
                 {
                     b.Property<string>("TransactionId")
                         .HasColumnType("nvarchar(256)")
@@ -261,7 +261,7 @@ namespace BankAPI.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<string>("BankAccountIBAN1")
+                    b.Property<string>("BankAccountIBAN")
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Currency")
@@ -269,14 +269,22 @@ namespace BankAPI.Migrations
                         .HasColumnType("nvarchar(64)")
                         .HasMaxLength(64);
 
+                    b.Property<int>("DaysInterval")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("FirstPaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsMonthly")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastPaymentDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ReceiverFullName")
                         .IsRequired()
@@ -295,35 +303,53 @@ namespace BankAPI.Migrations
 
                     b.HasKey("TransactionId");
 
-                    b.HasIndex("BankAccountIBAN1");
+                    b.HasIndex("BankAccountIBAN");
 
-                    b.ToTable("Transactions");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Transaction");
+                    b.ToTable("RecurringTransactions");
                 });
 
-            modelBuilder.Entity("BankAPI.Entities.RecurringTransaction", b =>
+            modelBuilder.Entity("BankAPI.Entities.Transaction", b =>
                 {
-                    b.HasBaseType("BankAPI.Entities.Transaction");
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
 
                     b.Property<string>("BankAccountIBAN")
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int>("DaysInterval")
-                        .HasColumnType("int");
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(64)")
+                        .HasMaxLength(64);
 
-                    b.Property<DateTime>("FirstPaymentDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
 
-                    b.Property<bool>("IsMonthly")
-                        .HasColumnType("bit");
+                    b.Property<string>("ReceiverFullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
 
-                    b.Property<DateTime>("LastPaymentDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("ReceiverIBAN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("SenderIBAN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.HasKey("TransactionId");
 
                     b.HasIndex("BankAccountIBAN");
 
-                    b.HasDiscriminator().HasValue("RecurringTransaction");
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("BankAPI.Entities.Admin", b =>
@@ -432,17 +458,17 @@ namespace BankAPI.Migrations
                         });
                 });
 
-            modelBuilder.Entity("BankAPI.Entities.Transaction", b =>
-                {
-                    b.HasOne("BankAPI.Entities.BankAccount", null)
-                        .WithMany("Transactions")
-                        .HasForeignKey("BankAccountIBAN1");
-                });
-
             modelBuilder.Entity("BankAPI.Entities.RecurringTransaction", b =>
                 {
                     b.HasOne("BankAPI.Entities.BankAccount", null)
                         .WithMany("RecurringTransactions")
+                        .HasForeignKey("BankAccountIBAN");
+                });
+
+            modelBuilder.Entity("BankAPI.Entities.Transaction", b =>
+                {
+                    b.HasOne("BankAPI.Entities.BankAccount", null)
+                        .WithMany("Transactions")
                         .HasForeignKey("BankAccountIBAN");
                 });
 #pragma warning restore 612, 618

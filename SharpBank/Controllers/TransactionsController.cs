@@ -25,7 +25,8 @@ namespace SharpBank.Controllers
 
         public IActionResult Index()
         {
-
+            var result = _resolverService.GetLoggedInUserData<BankTransaction>(HttpContext, "/api/user/transactions");
+            ViewBag.AllTransactions = result;
             return View();
         }
 
@@ -33,21 +34,48 @@ namespace SharpBank.Controllers
         {
             IEnumerable<BankAccountModel> bankAccountsArray = _resolverService.GetLoggedInUserAccounts(HttpContext);
 
+            if (TempData["ErrorMessage"] != null)
+                ViewBag.ErrorMessage = TempData["ErrorMessage"].ToString();
             ViewBag.BankAccounts = bankAccountsArray;
             return View();
         }
 
         [HttpPost]
-        public IActionResult AddNewTransaction(MakeTransactionFormModel formData)
+        public async Task<IActionResult> AddNewTransaction(MakeTransactionFormModel formData)
         {
-            //TODO validate formData to have valid characters, for now consider valid
+            if(formData.Currency == "Currency..." || string.IsNullOrEmpty(formData.Currency) || formData.Amount<=5 
+                ||formData.SenderIban=="Choose..." || string.IsNullOrEmpty(formData.ReceiverIban))
+            {
+                TempData["ErrorMessage"] = "Transaction failed. Invalid params in form";
+                return RedirectToAction(actionName: "MakeTransaction", controllerName: "Transactions");
+            }
 
-            var response = HttpService.Instance.SendRequestToApiAsync(formData, "/api/transactions/newtransaction");
+            var response = await HttpService.Instance.SendRequestToApiAsync(formData, "/api/transactions/addtransaction");
 
-            if (response.IsCompletedSuccessfully)
+            if (response.IsSuccessStatusCode)
                 return RedirectToAction(actionName: "Index", controllerName: "Home");
 
-            return RedirectToAction(actionName: "Index", controllerName: "TransactionsController");
+            return RedirectToAction(actionName: "MakeTransaction", controllerName: "Transactions");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TransactionBetweenAccounts(MakeTransactionFormModel formData)
+        {
+            if (formData.Amount <= 5 || formData.SenderIban == formData.ReceiverIban)
+            {
+                TempData["ErrorMessage"] = "Transaction failed. Invalid params in form";
+                return RedirectToAction(actionName: "MakeTransaction", controllerName: "Transactions");
+            }
+
+            formData.Description = "Transfer between user own accounts. Auto-Filled by app";
+            formData.ReceiverFullName = "Transaction autocompleted";
+
+            var response = await HttpService.Instance.SendRequestToApiAsync(formData, "/api/transactions/addtransaction");
+
+            if (response.IsSuccessStatusCode)
+                return RedirectToAction(actionName: "Index", controllerName: "Home");
+
+            return RedirectToAction(actionName: "MakeTransaction", controllerName: "Transactions");
         }
     }
 }
