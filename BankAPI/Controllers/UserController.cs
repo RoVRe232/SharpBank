@@ -139,6 +139,20 @@ namespace BankAPI.Controllers
             return Ok(serializedTransactions);
         }
 
+        [HttpPost]
+        [Route("recurringtransactions")]
+        public IActionResult GetUserRecurringTransactions([FromBody] string username)
+        {
+            var user = _customerService.GetCustomerByUsername(username);
+            if (user == null)
+                return BadRequest(new { message = "Invalid request" });
+
+            var transactions = _transactionService.GetAllRecurringTransactionsForUser(user);
+
+            string serializedTransactions = JsonConvert.SerializeObject(transactions);
+            return Ok(serializedTransactions);
+        }
+
         private void SetTokenCookie(string token)
         {
             var cookieOptions = new CookieOptions

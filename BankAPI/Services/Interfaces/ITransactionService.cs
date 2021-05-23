@@ -10,5 +10,6 @@ namespace BankAPI.Services.Interfaces
         bool AddTransaction(Transaction transaction);
         bool AddRecurringTransaction(RecurringTransaction recurringTransaction);
         IEnumerable<Transaction> GetAllTransactionsForUser(Customer customer);
+        IEnumerable<RecurringTransaction> GetAllRecurringTransactionsForUser(Customer customer);
     }
 }

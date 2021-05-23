@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NToastNotify;
 using SharpBank.Models.Login;
 using SharpBank.Services;
 using SharpBank.Utils;
@@ -17,9 +18,11 @@ namespace SharpBank.Controllers
     public class LoginController : Controller
     {
         private LoginService _loginService;
-        public LoginController(LoginService loginService)
+        private readonly IToastNotification _toastNotification;
+        public LoginController(LoginService loginService, IToastNotification toastNotification)
         {
             _loginService = loginService;
+            _toastNotification = toastNotification;
         }
 
         public IActionResult Index()
@@ -36,7 +39,6 @@ namespace SharpBank.Controllers
         public async Task<IActionResult> Connect(LoginFormModel loginForm)
         {
             loginForm.Password = Hasher.ComputeB64HashWithSha256(loginForm.Password);
-
             var response = await HttpService.Instance.SendRequestToApiAsync(loginForm, "/api/user/loginrequest");
             if (response.IsSuccessStatusCode)
             {
@@ -52,13 +54,16 @@ namespace SharpBank.Controllers
                 }
                 else
                 {
+                    _toastNotification.AddErrorToastMessage("Invalid token, please log in again.");
                     HttpContext.Session.SetString(sessionKey, "");
                     return RedirectToAction(actionName: "Index", controllerName: "Login");
                 }
 
+                _toastNotification.AddSuccessToastMessage("Login Request successfull!");
                 return RedirectToAction(actionName: "Index", controllerName: "Home");
             }
 
+            _toastNotification.AddErrorToastMessage("Login request failed, please try again.");
             return RedirectToAction(actionName: "Index", controllerName: "Login");
         }
     }

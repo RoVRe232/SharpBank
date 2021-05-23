@@ -2,6 +2,12 @@
     ViewData["Title"] = "Home Page";
     var BankAccounts = ViewBag.BankAccounts;
     var BankAccountIndex = 1;
+    var Labels = ViewBag.Labels;
+    var Data = ViewBag.Data;
+
+    var transactions = ViewBag.Transactions;
+    var transactionIndex = 1;
+    var Username = ViewBag.Username;
 }
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
@@ -44,7 +50,7 @@
                     <th>@BankAccount.Balance @BankAccount.Currency</th>
                     <th>
                         <div>
-                            <a class="action-button"><i class="far fa-money-bill-alt action-button-icon"></i></a>
+                            <a class="action-button" asp-action="MakeTransaction" asp-controller="Transactions" asp-route-senderIban="@BankAccount.IBAN"><i class="far fa-money-bill-alt action-button-icon"></i></a>
                         </div>
                     </th>
                 </tr>
@@ -56,6 +62,26 @@
 <div class="container d-flex justify-content-center">
     <canvas id="pieChart" style="max-width: 500px;"></canvas>
 </div>
+<script src='~/lib/chartjs/dist/Chart.bundle.js'></script>
+<script src="~/js/home.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var labels = @(Html.Raw(Json.Serialize(Labels))), data = @(Html.Raw(Json.Serialize(Data)));
+    var ctxP = document.getElementById("pieChart").getContext('2d');
+    var myPieChart = new Chart(ctxP, {
+        type: 'pie',
+        data: {
+            labels: labels /*["Account1", "Account2", "Account3", "Account4", "Account5"]*/,
+            datasets: [{
+                data: data /*[240, 50, 120, 40, 120]*/,
+                backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
+                hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
 
 <hr />
 
@@ -67,23 +93,25 @@
                 <th>No</th>
                 <th>Sender IBAN</th>
                 <th>Receiver IBAN</th>
-                <th>Card id</th>
-                <th>Date/hour</th>
+                <th>Receiver Full Name</th>
+                <th>Transaction id</th>
+                <th>Description</th>
                 <th>Amount</th>
-                <th>Remaining Balance</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th>1</th>
-                <th>RO008383842139923</th>
-                <th>RO008312343239923</th>
-                <th>Visa, 0234 1544 **** ****</th>
-                <th>Fri 26th Feb 2021</th>
-                <th>345 RON</th>
-                <th>8933 RON</th>
-                <th></th>
-            </tr>
+            @foreach (var transaction in transactions)
+            {
+                <tr>
+                    <th>@transactionIndex @{transactionIndex++;}</th>
+                    <th>@transaction.SenderIBAN</th>
+                    <th>@transaction.ReceiverIBAN</th>
+                    <th>@transaction.ReceiverFullName</th>
+                    <th>@transaction.TransactionId</th>
+                    <th>@transaction.Description</th>
+                    <th>@transaction.Amount @transaction.Currency</th>
+                </tr>
+            }
         </tbody>
     </table>
 </div>
@@ -141,6 +169,3 @@
 </div>
 
 <hr />
-
-<script src='~/lib/chartjs/dist/Chart.bundle.js'></script>
-<script src="~/js/home.js" type="text/javascript"></script>

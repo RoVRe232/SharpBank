@@ -8,5 +8,8 @@ namespace BankAPI.Repositories.Interfaces
 {
     public interface IRecurringTransactionRepository : IRepository<RecurringTransaction>
     {
+        void AddRecurringTransaction(BankAccount senderAccount, 
+            RecurringTransaction recurringTransaction);
+        IEnumerable<RecurringTransaction> GetTodayBillingTransactions();
     }
 }

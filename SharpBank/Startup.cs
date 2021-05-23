@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using NToastNotify;
 using SharpBank.Services;
 using SharpBank.Services.Interfaces;
 using SharpBank.Utils;
@@ -79,6 +80,12 @@ namespace SharpBank
                 options.AddPolicy("LoggedIn", policy => policy.Requirements.Add(new UserLoggedInRequirement()));
             });
             services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
+
+            services.AddMvc().AddNToastNotifyToastr(new NToastNotify.ToastrOptions()
+            {
+                CloseButton = true,
+                PositionClass = ToastPositions.BottomRight
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -109,6 +116,8 @@ namespace SharpBank
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseNToastNotify();
 
             app.UseEndpoints(endpoints =>
             {

@@ -65,5 +65,40 @@ namespace BankAPI.Controllers
 
             return httpResponse;
         }
+
+        [HttpPost]
+        [Route("addrecurringtransaction")]
+        public async Task<HttpResponseMessage> AddRecurringTransaction(MakeRecurringTransactionModel transactionFormData)
+        {
+            HttpResponseMessage httpResponse = new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+                Content = new StringContent("Query successful : transaction added to database!")
+            };
+
+            RecurringTransaction newTransaction = new RecurringTransaction
+            {
+                TransactionId = System.Guid.NewGuid().ToString(),
+                SenderIBAN = transactionFormData.SenderIBAN,
+                ReceiverIBAN = transactionFormData.ReceiverIBAN,
+                ReceiverFullName = transactionFormData.ReceiverFullName,
+                Description = transactionFormData.Description,
+                Amount = transactionFormData.Amount,
+                Currency = transactionFormData.Currency,
+                FirstPaymentDate = transactionFormData.FirstPaymentDate,
+                LastPaymentDate = transactionFormData.LastPaymentDate,
+                DaysInterval = transactionFormData.DaysInterval,
+                IsMonthly = transactionFormData.DaysInterval!=0?false:true
+            };
+
+            if (_transactionService.AddRecurringTransaction(newTransaction))
+                return httpResponse;
+
+            httpResponse.StatusCode = System.Net.HttpStatusCode.BadRequest;
+            httpResponse.Content = new StringContent("Query unsuccessful : transaction NOT added to database");
+
+            return httpResponse;
+        }
+
     }
 }

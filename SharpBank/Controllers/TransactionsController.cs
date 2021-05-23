@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NToastNotify;
 using SharpBank.Models.Accounts;
 using SharpBank.Models.Transactions;
 using SharpBank.Services;
@@ -16,11 +17,14 @@ namespace SharpBank.Controllers
     {
         private LoginService _loginService;
         private IResolverService _resolverService;
+        private readonly IToastNotification _toastNotification;
 
-        public TransactionsController(LoginService loginService, IResolverService resolverService)
+        public TransactionsController(LoginService loginService, IResolverService resolverService, 
+            IToastNotification toastNotification)
         {
             _loginService = loginService;
             _resolverService = resolverService;
+            _toastNotification = toastNotification;
         }
 
         public IActionResult Index()
@@ -30,13 +34,14 @@ namespace SharpBank.Controllers
             return View();
         }
 
-        public IActionResult MakeTransaction()
+        public IActionResult MakeTransaction(string senderIban=null)
         {
             IEnumerable<BankAccountModel> bankAccountsArray = _resolverService.GetLoggedInUserAccounts(HttpContext);
 
             if (TempData["ErrorMessage"] != null)
                 ViewBag.ErrorMessage = TempData["ErrorMessage"].ToString();
             ViewBag.BankAccounts = bankAccountsArray;
+            ViewBag.SenderIban = senderIban;
             return View();
         }
 
@@ -46,6 +51,7 @@ namespace SharpBank.Controllers
             if(formData.Currency == "Currency..." || string.IsNullOrEmpty(formData.Currency) || formData.Amount<=5 
                 ||formData.SenderIban=="Choose..." || string.IsNullOrEmpty(formData.ReceiverIban))
             {
+                _toastNotification.AddErrorToastMessage("Transaction failed because of invalid params. Please try again");
                 TempData["ErrorMessage"] = "Transaction failed. Invalid params in form";
                 return RedirectToAction(actionName: "MakeTransaction", controllerName: "Transactions");
             }
@@ -53,8 +59,12 @@ namespace SharpBank.Controllers
             var response = await HttpService.Instance.SendRequestToApiAsync(formData, "/api/transactions/addtransaction");
 
             if (response.IsSuccessStatusCode)
+            {
+                _toastNotification.AddSuccessToastMessage("Transaction completed!");
                 return RedirectToAction(actionName: "Index", controllerName: "Home");
+            }
 
+            _toastNotification.AddErrorToastMessage("Transaction failed. Please try again");
             return RedirectToAction(actionName: "MakeTransaction", controllerName: "Transactions");
         }
 

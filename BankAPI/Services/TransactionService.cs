@@ -53,12 +53,13 @@ namespace BankAPI.Services
         {
             BankAccount senderAccount = bankAccountsRepository
                 .GetQuery(value => value.IBAN.Equals(recurringTransaction.SenderIBAN))
+                .Include(e => e.RecurringTransactions)
                 .FirstOrDefault();
 
             if (senderAccount == null || senderAccount.Balance - recurringTransaction.Amount < 0 || senderAccount.IsBlocked)
                 return false;
 
-            //TODO implement recurring transactions
+            recurringTransactionRepository.AddRecurringTransaction(senderAccount, recurringTransaction);
 
             return true;
         }
@@ -74,6 +75,23 @@ namespace BankAPI.Services
                     .FirstOrDefault();
 
                 foreach (var transaction in userAccount.Transactions)
+                    transactionsBuffer.Add(transaction);
+            }
+
+            return transactionsBuffer;
+        }
+
+        public IEnumerable<RecurringTransaction> GetAllRecurringTransactionsForUser(Customer customer)
+        {
+            var transactionsBuffer = new List<RecurringTransaction>();
+            foreach (var bankAccount in customer.BankAccounts)
+            {
+                BankAccount userAccount = bankAccountsRepository
+                    .GetQuery(value => value.IBAN == bankAccount.IBAN)
+                    .Include(e => e.RecurringTransactions)
+                    .FirstOrDefault();
+
+                foreach (var transaction in userAccount.RecurringTransactions)
                     transactionsBuffer.Add(transaction);
             }
 

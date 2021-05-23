@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SharpBank.Models;
 using SharpBank.Models.Accounts;
+using SharpBank.Models.Transactions;
 using SharpBank.Services;
 using SharpBank.Services.Interfaces;
 
@@ -29,9 +30,31 @@ namespace SharpBank.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<BankAccountModel> bankAccountsArray = _resolverService.GetLoggedInUserAccounts(HttpContext);
+            var username = _loginService.GetLoggedInUsername(HttpContext);
+            if (username == null)
+                return null;
 
+            IEnumerable<BankAccountModel> bankAccountsArray = _resolverService.GetLoggedInUserAccounts(HttpContext);
+            bankAccountsArray = bankAccountsArray.OrderByDescending(e => e.Balance).Take(5);
+
+            var transactions = _resolverService.GetLoggedInUserData<BankTransaction>(HttpContext, "/api/user/transactions");
+            transactions = transactions.TakeLast(5).Reverse();
+
+            List<string> labels = new List<string>();
+            List<double> data = new List<double>();
+            foreach(var bankAccount in bankAccountsArray)
+            {
+                labels.Add(bankAccount.IBAN);
+                data.Add(bankAccount.Balance);
+            }
+
+            ViewBag.Username = username;
             ViewBag.BankAccounts = bankAccountsArray;
+            ViewBag.Transactions = transactions;
+
+            ViewBag.Labels = labels;
+            ViewBag.Data = data;
+
             return View();
         }
         public IActionResult Help()

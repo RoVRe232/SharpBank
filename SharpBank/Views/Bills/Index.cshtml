@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Transactions overview";
     var transactionIndex = 1;
-    var transactions = ViewBag.AllTransactions;
+    var recurringTransactions = ViewBag.RecurringTransactions;
 }
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
@@ -33,20 +33,26 @@
                 <th>Transaction id</th>
                 <th>Description</th>
                 <th>Amount</th>
+                <th>Starting date</th>
+                <th>Ending date</th>
+                <th>Interval(days)</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in transactions)
+            @foreach (var item in recurringTransactions)
             {
-                <tr>
-                    <th>@transactionIndex @{transactionIndex++;}</th>
-                    <th>@item.SenderIBAN</th>
-                    <th>@item.ReceiverIBAN</th>
-                    <th>@item.ReceiverFullName</th>
-                    <th>@item.TransactionId</th>
-                    <th>@item.Description</th>
-                    <th>@item.Amount @item.Currency</th>
-                </tr>
+            <tr>
+                <th>@transactionIndex @{transactionIndex++;}</th>
+                <th>@item.SenderIBAN</th>
+                <th>@item.ReceiverIBAN</th>
+                <th>@item.ReceiverFullName</th>
+                <th>@item.TransactionId</th>
+                <th>@item.Description</th>
+                <th>@item.Amount @item.Currency</th>
+                <th>@item.FirstPaymentDate</th>
+                <th>@item.LastPaymentDate</th>
+                <th>@item.DaysInterval</th>
+            </tr>
             }
         </tbody>
     </table>
@@ -63,7 +69,7 @@
 <hr />
 <br />
 
-<div class="jumbotron transactions-card-jumbo" >
+<div class="jumbotron transactions-card-jumbo">
     <h1>The world is moving, so why shouldn't you?</h1>
     <p>Link any of your cards and start making transactions, the sharp way.</p>
     <botton class="btn btn-light">Add a new card</botton>
