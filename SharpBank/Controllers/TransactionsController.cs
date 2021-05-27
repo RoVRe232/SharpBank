@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharpBank.Models.Accounts;
 using SharpBank.Models.Transactions;
 using SharpBank.Services;
+using SharpBank.Services.Interfaces;
 
 namespace SharpBank.Controllers
 {
@@ -13,10 +15,12 @@ namespace SharpBank.Controllers
     public class TransactionsController : Controller
     {
         private LoginService _loginService;
+        private IResolverService _resolverService;
 
-        public TransactionsController(LoginService loginService)
+        public TransactionsController(LoginService loginService, IResolverService resolverService)
         {
             _loginService = loginService;
+            _resolverService = resolverService;
         }
 
         public IActionResult Index()
@@ -27,6 +31,9 @@ namespace SharpBank.Controllers
 
         public IActionResult MakeTransaction()
         {
+            IEnumerable<BankAccountModel> bankAccountsArray = _resolverService.GetLoggedInUserAccounts(HttpContext);
+
+            ViewBag.BankAccounts = bankAccountsArray;
             return View();
         }
 

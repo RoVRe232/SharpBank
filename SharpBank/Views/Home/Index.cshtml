@@ -1,5 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    var BankAccounts = ViewBag.BankAccounts;
+    var BankAccountIndex = 1;
 }
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
@@ -30,33 +32,60 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th>1</th>
-                <th>RO008383842139923</th>
-                <th>Visa, Mastercard</th>
-                <th>345 RON</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th>2</th>
-                <th>RO008383842139923</th>
-                <th>Visa, Mastercard</th>
-                <th>345 RON</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th>3</th>
-                <th>RO008383842139923</th>
-                <th>Visa, Mastercard</th>
-                <th>345 RON</th>
-                <th></th>
-            </tr>
+            @foreach (var BankAccount in BankAccounts)
+            {
+                <tr>
+                    <th>@BankAccountIndex @{BankAccountIndex++;}</th>
+                    <th>@BankAccount.IBAN</th>
+                    <th>
+                        Visa, 0234 1544 **** **** <br />
+                        MasterCard, 0434 6544 **** **** <br />
+                    </th>
+                    <th>@BankAccount.Balance @BankAccount.Currency</th>
+                    <th>
+                        <div>
+                            <a class="action-button"><i class="far fa-money-bill-alt action-button-icon"></i></a>
+                        </div>
+                    </th>
+                </tr>
+            }
         </tbody>
     </table>
 </div>
 
 <div class="container d-flex justify-content-center">
     <canvas id="pieChart" style="max-width: 500px;"></canvas>
+</div>
+
+<hr />
+
+<h2>Latest transactions</h2>
+<div class="table-responsive-md">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Sender IBAN</th>
+                <th>Receiver IBAN</th>
+                <th>Card id</th>
+                <th>Date/hour</th>
+                <th>Amount</th>
+                <th>Remaining Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>1</th>
+                <th>RO008383842139923</th>
+                <th>RO008312343239923</th>
+                <th>Visa, 0234 1544 **** ****</th>
+                <th>Fri 26th Feb 2021</th>
+                <th>345 RON</th>
+                <th>8933 RON</th>
+                <th></th>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <hr />
