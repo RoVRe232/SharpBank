@@ -17,7 +17,7 @@ using System.Text;
 namespace AppLogic.Tests
 {
     [TestClass]
-    public class HomeTests
+    public class LoginTest
     {
         private IWebDriver driver;
 
@@ -34,11 +34,19 @@ namespace AppLogic.Tests
             driver.Navigate().GoToUrl("https://localhost:44373/");
             var usernameInput = driver.FindElement(By.Id("username"));
             var pawsswordInput = driver.FindElement(By.Id("password"));
-            usernameInput.SendKeys("romanremus1999@gmail.com");
+            usernameInput.SendKeys("romanremus1999");
             pawsswordInput.SendKeys("P@r0la123");
 
             var logInButton = driver.FindElement(By.XPath("/html/body/div[2]/div/form/div[3]/button"));
             logInButton.Click();
+
+            Assert.AreEqual(driver.Url, "https://localhost:44373/Home");
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            driver.Close();
         }
     }
 }
